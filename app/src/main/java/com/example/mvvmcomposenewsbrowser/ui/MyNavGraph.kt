@@ -1,18 +1,20 @@
 package com.example.mvvmcomposenewsbrowser.ui
 
-import androidx.compose.material3.DrawerState
-import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.rememberDrawerState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import android.content.Context
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.mvvmcomposenewsbrowser.ui.util.*
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
@@ -24,13 +26,38 @@ fun MyNavGraph(
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
     navAction : MyNavigationActions = remember(navController) {
         MyNavigationActions(navController)
-    }
+    },
+    context: Context = LocalContext.current
 ) {
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val title = navBackStackEntry.getTitle(context)
+    val rememberTopBarType = remember(navBackStackEntry.getTopAppBarType()) {
+        navBackStackEntry.getTopAppBarType()
+    }
+    val onIconPress = rememberTopBarType.getOnClick(navAction, drawerState, coroutineScope)
+
+    Scaffold(
+        modifier = modifier,
+        topBar = {
+            MyTopAppBar(
+                title = title,
+                onIconPress = onIconPress,
+                icon = {
+                    when(rememberTopBarType) {
+                        TopAppBarType.Drawer -> DrawerIcon()
+                        TopAppBarType.Back -> BackIcon()
+                    }
+                }
+            )
+        }
+    ) {
+
+    }
 
     NavHost(
         navController = navController,
-        startDestination = startDestination,
-        modifier = modifier
+        startDestination = startDestination
     ) {
         composable(
             MyDestinations.NEWS_ROUTE,

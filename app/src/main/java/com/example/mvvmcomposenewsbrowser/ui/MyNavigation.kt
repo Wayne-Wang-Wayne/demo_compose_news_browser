@@ -36,4 +36,8 @@ class MyNavigationActions(private val navController: NavHostController) {
         navController.navigate("$NEWS_DETAIL_SCREEN/$newsLink")
     }
 
+    fun popBack() {
+        navController.popBackStack()
+    }
+
 }

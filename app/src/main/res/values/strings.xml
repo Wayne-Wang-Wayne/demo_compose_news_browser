@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">MVVM Compose News Browser</string>
+    <string name="news_title">新聞列表</string>
+    <string name="news_detail_title">新聞內容</string>
 </resources>
