@@ -2,10 +2,7 @@ package com.example.mvvmcomposenewsbrowser.ui.news
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -55,21 +52,28 @@ fun NewsScreen(
 @Composable
 fun NewsScreenBody(
     modifier: Modifier = Modifier,
-    lazyListState: LazyListState = rememberLazyListState()
+    contentsListState: LazyListState = rememberLazyListState(),
+    pickerListState: LazyListState = rememberLazyListState()
 ) {
-    LazyColumn(
-        state = lazyListState,
-        modifier = modifier,
-        contentPadding = PaddingValues(15.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+    Column(
+        modifier = modifier
     ) {
-        items(
-            listOf(1, 2, 3, 4, 5),
-            key = { it }
+        NewsCategoryPicker(
+            pickerListState = pickerListState
+        )
+        LazyColumn(
+            state = contentsListState,
+            contentPadding = PaddingValues(15.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            NewsListCard(
-                modifier = Modifier.height(120.dp)
-            )
+            items(
+                listOf(1, 2, 3, 4, 5, 6, 7, 8, 9),
+                key = { it }
+            ) {
+                NewsListCard(
+                    modifier = Modifier.height(120.dp)
+                )
+            }
         }
     }
 }
@@ -135,6 +139,44 @@ fun NewsListCard(
                 }
             }
     }
+}
+
+@Composable
+fun NewsCategoryPicker(
+    pickerListState: LazyListState,
+    modifier: Modifier = Modifier
+) {
+    LazyRow(
+        state = pickerListState,
+        modifier = modifier,
+        contentPadding = PaddingValues(10.dp),
+        horizontalArrangement = Arrangement.spacedBy(5.dp)
+    ) {
+        items(
+            listOf(1, 2, 3, 4, 5, 6, 7, 8, 9),
+            key = { it }
+        ) {
+            PickItem()
+        }
+    }
+}
+
+@Composable
+fun PickItem(
+    modifier: Modifier = Modifier
+) {
+    OutlinedButton(
+        onClick = { },
+        shape = RoundedCornerShape(50)
+    ){
+        Text( text = "娛樂" )
+    }
+}
+
+@Preview
+@Composable
+fun PickItemPreview() {
+    PickItem()
 }
 
 @Preview(showBackground = true)
