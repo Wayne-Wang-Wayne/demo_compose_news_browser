@@ -100,7 +100,7 @@ fun DrawerButton(
     }
 }
 
-@Preview("Drawer contents")
+@Preview("Drawer contents", showBackground = true)
 @Composable
 fun DrawerContentPreview() {
     MVVMComposeNewsBrowserTheme {

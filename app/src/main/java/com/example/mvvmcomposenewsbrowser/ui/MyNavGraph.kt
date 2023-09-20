@@ -1,8 +1,8 @@
 package com.example.mvvmcomposenewsbrowser.ui
 
 import android.content.Context
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
+import android.util.Log
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -24,40 +24,22 @@ fun MyNavGraph(
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     startDestination: String = MyDestinations.NEWS_ROUTE,
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
-    navAction : MyNavigationActions = remember(navController) {
+    navAction: MyNavigationActions = remember(navController) {
         MyNavigationActions(navController)
     },
     context: Context = LocalContext.current
 ) {
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val title = navBackStackEntry.getTitle(context)
-    val rememberTopBarType = remember(navBackStackEntry.getTopAppBarType()) {
-        navBackStackEntry.getTopAppBarType()
-    }
-    val onIconPress = rememberTopBarType.getOnClick(navAction, drawerState, coroutineScope)
-
-    Scaffold(
-        modifier = modifier,
-        topBar = {
-            MyTopAppBar(
-                title = title,
-                onIconPress = onIconPress,
-                icon = {
-                    when(rememberTopBarType) {
-                        TopAppBarType.Drawer -> DrawerIcon()
-                        TopAppBarType.Back -> BackIcon()
-                    }
-                }
-            )
+    LaunchedEffect(navBackStackEntry) {
+        navBackStackEntry?.destination?.route?.let { currentRoute ->
+            Log.d(MY_NAV_GRAPH_TAG, "Current Route: $currentRoute")
         }
-    ) {
-
     }
-
     NavHost(
         navController = navController,
-        startDestination = startDestination
+        startDestination = startDestination,
+        modifier = modifier
     ) {
         composable(
             MyDestinations.NEWS_ROUTE,
@@ -79,3 +61,4 @@ fun MyNavGraph(
         }
     }
 }
+const val MY_NAV_GRAPH_TAG = "MyNavGraph"
