@@ -156,27 +156,25 @@ fun NewsCategoryPicker(
             listOf(1, 2, 3, 4, 5, 6, 7, 8, 9),
             key = { it }
         ) {
-            PickItem()
+            PickItem(true)
         }
     }
 }
 
 @Composable
 fun PickItem(
+    isSelected: Boolean,
     modifier: Modifier = Modifier
 ) {
-    OutlinedButton(
+    val color = if(isSelected) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.tertiary
+    Button(
         onClick = { },
-        shape = RoundedCornerShape(50)
+        shape = RoundedCornerShape(50),
+        colors = ButtonDefaults.buttonColors(containerColor = color),
+        modifier = modifier
     ){
         Text( text = "娛樂" )
     }
-}
-
-@Preview
-@Composable
-fun PickItemPreview() {
-    PickItem()
 }
 
 @Preview(showBackground = true)
