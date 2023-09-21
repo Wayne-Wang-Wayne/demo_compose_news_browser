@@ -1,10 +1,8 @@
 package com.example.mvvmcomposenewsbrowser.ui.news
 
-import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mvvmcomposenewsbrowser.R
 import com.example.mvvmcomposenewsbrowser.data.news.NewsRepository
 import com.example.mvvmcomposenewsbrowser.data.news.ParsedArticle
 import com.example.mvvmcomposenewsbrowser.data.news.ParsedNewsListData
@@ -36,7 +34,6 @@ class NewsViewModel @Inject constructor(
         } else {
             newsRepository.getSpecificNews(category).updateNewsUiState()
         }
-
     }
 
     private fun Flow<ParsedNewsListData>.updateNewsUiState() = viewModelScope.launch {

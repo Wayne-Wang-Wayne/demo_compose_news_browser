@@ -6,6 +6,8 @@ import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -17,9 +19,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import com.example.mvvmcomposenewsbrowser.R
+import com.example.mvvmcomposenewsbrowser.data.news.ParsedArticle
+import com.example.mvvmcomposenewsbrowser.data.news.datasources.remote.NewsCategory
 import com.example.mvvmcomposenewsbrowser.ui.theme.MVVMComposeNewsBrowserTheme
 import com.example.mvvmcomposenewsbrowser.ui.util.DrawerIcon
 import com.example.mvvmcomposenewsbrowser.ui.util.HeartButton
@@ -28,15 +34,22 @@ import com.example.mvvmcomposenewsbrowser.ui.util.ShimmerLoadingBlock
 
 @Composable
 fun NewsScreen(
-    onIconPress: () -> Unit,
-    modifier: Modifier = Modifier
+    onTopLeftIconPress: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: NewsViewModel = hiltViewModel()
 ) {
+    val newsUiState by viewModel.newsUiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(viewModel) {
+        viewModel.getFreshNews(NewsCategory.WHATEVER)
+    }
+
     Scaffold(
         modifier = modifier,
         topBar = {
             MyTopAppBar(
                 title = stringResource(id = R.string.news_title),
-                onIconPress = onIconPress,
+                onIconPress = onTopLeftIconPress,
                 icon = {
                     DrawerIcon()
                 }
@@ -44,6 +57,7 @@ fun NewsScreen(
         }
     ) {
         NewsScreenBody(
+            newsUiState = newsUiState,
             modifier = Modifier.padding(it)
         )
     }
@@ -51,6 +65,7 @@ fun NewsScreen(
 
 @Composable
 fun NewsScreenBody(
+    newsUiState: NewsUiState,
     modifier: Modifier = Modifier,
     contentsListState: LazyListState = rememberLazyListState(),
     pickerListState: LazyListState = rememberLazyListState()
@@ -61,23 +76,61 @@ fun NewsScreenBody(
         NewsCategoryPicker(
             pickerListState = pickerListState
         )
-        LazyColumn(
-            state = contentsListState,
-            contentPadding = PaddingValues(15.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(
-                listOf(1, 2, 3, 4, 5, 6, 7, 8, 9),
-                key = { it }
-            ) {
-                NewsListCard()
+        when(newsUiState) {
+            is NewsUiState.Loading -> {
+
+            }
+            is NewsUiState.Success -> {
+                NewsSuccessBody(
+                    newsList = newsUiState.newsList,
+                    contentsListState = contentsListState
+                )
+            }
+            is NewsUiState.Error -> {
+
             }
         }
     }
 }
 
 @Composable
+fun NewsSuccessBody(
+    newsList: List<ParsedArticle>,
+    contentsListState: LazyListState,
+    modifier: Modifier = Modifier,
+//    onArticleClick: (String) -> Unit,
+//    onHeartClick: (String) -> Unit
+) {
+    LazyColumn(
+        state = contentsListState,
+        contentPadding = PaddingValues(15.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = modifier
+    ) {
+        items(
+            newsList,
+            key = { it.title }
+        ) { parsedArticle ->
+            NewsListCard(
+                author = parsedArticle.author,
+                title = parsedArticle.title,
+                url = parsedArticle.url,
+                publishedAt = parsedArticle.publishedAt,
+                imgUrl = parsedArticle.imgUrl,
+                isLiked = parsedArticle.isLiked
+            )
+        }
+    }
+}
+
+@Composable
 fun NewsListCard(
+    author: String,
+    title: String,
+    url: String,
+    publishedAt: String,
+    imgUrl: String,
+    isLiked: Boolean,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -104,7 +157,7 @@ fun NewsListCard(
                             contentDescription = null
                         )
                     },
-                    contentDescription = "YOASOBI公布亞巡有台灣！ 12月現身簡單生活節為個唱暖身 - 鏡週刊",
+                    contentDescription = title,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .size(100.dp)
@@ -118,7 +171,7 @@ fun NewsListCard(
                     modifier = Modifier.fillMaxHeight()
                 ) {
                     Text(
-                        text = "YOASOBI公布亞巡有台灣！ 12月現身簡單生活節為個唱暖身 - 鏡週刊",
+                        text = title,
                         style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
@@ -129,10 +182,18 @@ fun NewsListCard(
                         modifier = Modifier.fillMaxWidth()
                     ){
                         HeartButton()
-                        Text(
-                            text = "2023-09-19T23:31:00Z",
-                            style = MaterialTheme.typography.bodySmall
-                        )
+                        Column(
+                            horizontalAlignment = Alignment.End
+                        ) {
+                            Text(
+                                text = author,
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                            Text(
+                                text = publishedAt,
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
                     }
                 }
             }
@@ -180,13 +241,7 @@ fun PickItem(
 fun NewsScreenPreview() {
     MVVMComposeNewsBrowserTheme {
         NewsScreen(
-            onIconPress = {}
+            onTopLeftIconPress = {}
         )
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun NewsListCardPreview() {
-    NewsListCard()
 }

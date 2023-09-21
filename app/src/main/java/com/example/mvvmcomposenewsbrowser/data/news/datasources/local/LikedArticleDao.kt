@@ -12,7 +12,7 @@ interface LikedArticleDao {
     @Query("SELECT EXISTS(SELECT * FROM liked_article WHERE title = :title)")
     fun isLiked(title: String): Boolean
 
-    @Query("SELECT * from liked_article ORDER BY id DESC")
+    @Query("SELECT * from liked_article")
     fun getLikedArticle(): Flow<List<LocalLikedArticle>>
 
     @Delete

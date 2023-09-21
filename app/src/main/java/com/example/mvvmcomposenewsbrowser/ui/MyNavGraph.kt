@@ -2,7 +2,6 @@ package com.example.mvvmcomposenewsbrowser.ui
 
 import android.content.Context
 import android.util.Log
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -14,7 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.mvvmcomposenewsbrowser.ui.util.*
+import com.example.mvvmcomposenewsbrowser.ui.news.NewsScreen
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
@@ -44,7 +43,7 @@ fun MyNavGraph(
         composable(
             MyDestinations.NEWS_ROUTE,
         ) {
-            // TODO: call News page function
+            NewsScreen(onTopLeftIconPress = {  })
         }
 
         composable(
