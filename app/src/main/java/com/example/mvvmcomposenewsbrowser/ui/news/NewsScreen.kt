@@ -70,9 +70,7 @@ fun NewsScreenBody(
                 listOf(1, 2, 3, 4, 5, 6, 7, 8, 9),
                 key = { it }
             ) {
-                NewsListCard(
-                    modifier = Modifier.height(120.dp)
-                )
+                NewsListCard()
             }
         }
     }
@@ -83,7 +81,7 @@ fun NewsListCard(
     modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier,
+        modifier = modifier.height(120.dp),
     ) {
             Row(
                 modifier = Modifier.padding(
