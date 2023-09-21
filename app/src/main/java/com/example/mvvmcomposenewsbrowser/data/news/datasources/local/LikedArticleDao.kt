@@ -10,7 +10,7 @@ interface LikedArticleDao {
     suspend fun insert(localLikedArticle: LocalLikedArticle)
 
     @Query("SELECT EXISTS(SELECT * FROM liked_article WHERE title = :title)")
-    fun isExists(title: String): Boolean
+    fun isLiked(title: String): Boolean
 
     @Query("SELECT * from liked_article ORDER BY id DESC")
     fun getLikedArticle(): Flow<List<LocalLikedArticle>>

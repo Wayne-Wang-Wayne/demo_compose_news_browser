@@ -4,18 +4,18 @@ import kotlinx.coroutines.flow.Flow
 
 interface NewsRepository {
 
-    fun getWhateverNews(): Flow<RepoLevelData>
+    fun getWhateverNews() : Flow<ParsedNewsListData>
 
-    fun getSpecificNews(): Flow<RepoLevelData>
+    fun getSpecificNews(category: String) : Flow<ParsedNewsListData>
 
 }
 
-data class RepoLevelData(
-    val repoLevelArticle: List<RepoLevelArticle>?,
+data class ParsedNewsListData(
+    val parsedArticle: List<ParsedArticle>?,
     val status: Status
 )
 
-data class RepoLevelArticle(
+data class ParsedArticle(
     val author: String,
     val title: String,
     val url: String,

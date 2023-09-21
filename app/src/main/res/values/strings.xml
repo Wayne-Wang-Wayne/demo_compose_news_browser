@@ -1,6 +1,12 @@
 <resources>
     <string name="app_name">MVVM Compose News Browser</string>
+    // 標題
     <string name="news_title">新聞列表</string>
     <string name="news_detail_title">新聞內容</string>
+
+
     <string name="like_news_btn_des">Like the news.</string>
+
+    // 錯誤字串
+    <string name="error_no_news">哇，目前沒有對應的新聞資料</string>
 </resources>

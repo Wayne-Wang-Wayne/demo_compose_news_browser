@@ -23,3 +23,13 @@ interface NewsApiService {
     ): Flow<Response<NewsApiData>>
 
 }
+
+object NewsCategory {
+    const val WHATEVER = "whatever"
+    const val BUSINESS = "business"
+    const val ENTERTAINMENT = "entertainment"
+    const val HEALTH = "health"
+    const val SCIENCE = "science"
+    const val SPORTS = "sports"
+    const val TECHNOLOGY = "technology"
+}
