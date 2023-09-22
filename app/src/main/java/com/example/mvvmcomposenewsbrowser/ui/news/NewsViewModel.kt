@@ -13,11 +13,12 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-sealed interface NewsUiState {
-    object Loading : NewsUiState
-    data class Success(val newsList: List<ParsedArticle>) : NewsUiState
-    data class Error(val msg: String) : NewsUiState
-}
+data class NewsUiState(
+    val isLoading: Boolean = false,
+    val isError: Boolean = false,
+    val errorMsg: String = "",
+    val newsList: List<ParsedArticle> = listOf()
+)
 
 @HiltViewModel
 class NewsViewModel @Inject constructor(
@@ -25,7 +26,7 @@ class NewsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val _newsUiState: MutableStateFlow<NewsUiState> = MutableStateFlow(NewsUiState.Loading)
+    private val _newsUiState: MutableStateFlow<NewsUiState> = MutableStateFlow(NewsUiState(isLoading = true))
     val newsUiState = _newsUiState.asStateFlow()
 
     fun getFreshNews(category: String) {
@@ -41,21 +42,27 @@ class NewsViewModel @Inject constructor(
             when (val currentStatus = parsedListData.status) {
                 is Status.Success -> {
                     if (parsedListData.parsedArticle.isNullOrEmpty()) {
-                        NewsUiState.Error("哇，目前沒有對應的新聞資料")
+                        NewsUiState(
+                            isError = true,
+                            errorMsg = "哇，目前沒有對應的新聞資料"
+                        )
                     } else {
-                        NewsUiState.Success(parsedListData.parsedArticle)
+                        NewsUiState(newsList = parsedListData.parsedArticle)
                     }
                 }
                 is Status.ERROR -> {
-                    NewsUiState.Error(currentStatus.msg)
+                    NewsUiState(
+                        isError = true,
+                        errorMsg = currentStatus.msg
+                    )
                 }
             }
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = NewsUiState.Loading
+            initialValue = NewsUiState(isLoading = true)
         ).collect {
-            _newsUiState.emit(it)
+            _newsUiState.value = it
         }
     }
 

@@ -57,7 +57,10 @@ fun NewsScreen(
         }
     ) {
         NewsScreenBody(
-            newsUiState = newsUiState,
+            isLoading = newsUiState.isLoading,
+            isError = newsUiState.isError,
+            newsList = newsUiState.newsList,
+            errMsg = newsUiState.errorMsg,
             modifier = Modifier.padding(it)
         )
     }
@@ -65,7 +68,10 @@ fun NewsScreen(
 
 @Composable
 fun NewsScreenBody(
-    newsUiState: NewsUiState,
+    isLoading: Boolean,
+    isError: Boolean,
+    newsList: List<ParsedArticle>,
+    errMsg: String,
     modifier: Modifier = Modifier,
     contentsListState: LazyListState = rememberLazyListState(),
     pickerListState: LazyListState = rememberLazyListState()
@@ -76,19 +82,15 @@ fun NewsScreenBody(
         NewsCategoryPicker(
             pickerListState = pickerListState
         )
-        when(newsUiState) {
-            is NewsUiState.Loading -> {
+        if (isLoading) {
 
-            }
-            is NewsUiState.Success -> {
-                NewsSuccessBody(
-                    newsList = newsUiState.newsList,
-                    contentsListState = contentsListState
-                )
-            }
-            is NewsUiState.Error -> {
+        } else if (isError) {
 
-            }
+        } else {
+            NewsSuccessBody(
+                newsList = newsList,
+                contentsListState = contentsListState
+            )
         }
     }
 }
