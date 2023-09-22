@@ -8,8 +8,8 @@ import androidx.room.PrimaryKey
 )
 data class LocalLikedArticle(
     val author: String,
-    @PrimaryKey
     val title: String,
+    @PrimaryKey
     val url: String,
     val publishedAt: String,
     val imgUrl: String
