@@ -13,5 +13,5 @@ dependencyResolutionManagement {
         maven { url 'https://jitpack.io' }
     }
 }
-rootProject.name = "MVVM Compose News Browser"
+rootProject.name = "Demo Compose News Browser"
 include ':app'
