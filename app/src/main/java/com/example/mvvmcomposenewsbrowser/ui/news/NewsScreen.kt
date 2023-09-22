@@ -34,6 +34,7 @@ import coil.request.ImageRequest
 import com.example.mvvmcomposenewsbrowser.R
 import com.example.mvvmcomposenewsbrowser.data.news.ParsedArticle
 import com.example.mvvmcomposenewsbrowser.data.news.datasources.remote.NewsCategory
+import com.example.mvvmcomposenewsbrowser.data.news.datasources.remote.toChinese
 import com.example.mvvmcomposenewsbrowser.ui.theme.MVVMComposeNewsBrowserTheme
 import com.example.mvvmcomposenewsbrowser.ui.util.*
 
@@ -70,6 +71,7 @@ fun NewsScreen(
             newsList = newsUiState.newsList,
             errMsg = newsUiState.errorMsg,
             selectedCategory = newsUiState.newsCategory,
+            onCategorySelect = viewModel::getFreshNews,
             modifier = Modifier.padding(it)
         )
     }
@@ -82,6 +84,7 @@ fun NewsScreenBody(
     newsList: List<ParsedArticle>,
     errMsg: String,
     selectedCategory: NewsCategory,
+    onCategorySelect: (NewsCategory) -> Unit,
     modifier: Modifier = Modifier,
     contentsListState: LazyListState = rememberLazyListState(),
     pickerListState: LazyListState = rememberLazyListState()
@@ -91,10 +94,11 @@ fun NewsScreenBody(
     ) {
         NewsCategoryPicker(
             selectedCategory = selectedCategory,
-            pickerListState = pickerListState
+            pickerListState = pickerListState,
+            onCategorySelect = onCategorySelect
         )
         if (isError) {
-
+            // TODO Call Error Body
         } else {
             NewsSuccessBody(
                 isLoading = isLoading,
@@ -224,6 +228,7 @@ fun NewsListCard(
 @Composable
 fun NewsCategoryPicker(
     selectedCategory: NewsCategory,
+    onCategorySelect: (NewsCategory) -> Unit,
     pickerListState: LazyListState,
     modifier: Modifier = Modifier
 ) {
@@ -234,10 +239,14 @@ fun NewsCategoryPicker(
         horizontalArrangement = Arrangement.spacedBy(5.dp)
     ) {
         items(
-            listOf(1, 2, 3, 4, 5, 6, 7, 8, 9),
-            key = { it }
-        ) {
-            PickItem(true)
+            NewsCategory.values(),
+            key = { it.tag }
+        ) { newsCategory ->
+            PickItem(
+                newsCategory == selectedCategory,
+                onCategorySelect = onCategorySelect,
+                newsCategory = newsCategory
+            )
         }
     }
 }
@@ -245,16 +254,22 @@ fun NewsCategoryPicker(
 @Composable
 fun PickItem(
     isSelected: Boolean,
+    onCategorySelect: (NewsCategory) -> Unit,
+    newsCategory: NewsCategory,
     modifier: Modifier = Modifier
 ) {
     val color = if(isSelected) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.tertiary
     Button(
-        onClick = { },
+        onClick = {
+            if (!isSelected) {
+                onCategorySelect(newsCategory)
+            }
+        },
         shape = RoundedCornerShape(50),
         colors = ButtonDefaults.buttonColors(containerColor = color),
         modifier = modifier
     ){
-        Text( text = "娛樂" )
+        Text(text = newsCategory.toChinese())
     }
 }
 

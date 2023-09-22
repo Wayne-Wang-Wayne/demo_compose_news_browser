@@ -40,31 +40,49 @@ class NewsViewModel @Inject constructor(
     }
 
     private fun Flow<ParsedNewsListData>.updateNewsUiState() = viewModelScope.launch {
-        this@updateNewsUiState.map { parsedListData ->
+        this@updateNewsUiState.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = ParsedNewsListData(listOf(), Status.Loading)
+        ).collect { parsedListData ->
             when (val currentStatus = parsedListData.status) {
                 is Status.Success -> {
                     if (parsedListData.parsedArticle.isNullOrEmpty()) {
-                        NewsUiState(
-                            isError = true,
-                            errorMsg = "哇，目前沒有對應的新聞資料"
-                        )
+                        _newsUiState.update {
+                            it.copy(
+                                isError = true,
+                                isLoading = false,
+                                errorMsg = "哇，目前沒有對應的新聞資料"
+                            )
+                        }
                     } else {
-                        NewsUiState(newsList = parsedListData.parsedArticle)
+                        _newsUiState.update {
+                            it.copy(
+                                isError = false,
+                                isLoading = false,
+                                newsList = parsedListData.parsedArticle
+                            )
+                        }
                     }
                 }
                 is Status.ERROR -> {
-                    NewsUiState(
-                        isError = true,
-                        errorMsg = currentStatus.msg
-                    )
+                    _newsUiState.update {
+                        it.copy(
+                            isError = true,
+                            isLoading = false,
+                            errorMsg = currentStatus.msg
+                        )
+                    }
+                }
+                is Status.Loading -> {
+                    _newsUiState.update {
+                        it.copy(
+                            isError = false,
+                            isLoading = true,
+                        )
+                    }
                 }
             }
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = NewsUiState(isLoading = true)
-        ).collect {
-            _newsUiState.value = it
         }
     }
 

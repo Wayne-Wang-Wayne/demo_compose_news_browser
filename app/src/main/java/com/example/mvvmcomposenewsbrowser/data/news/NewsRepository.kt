@@ -26,5 +26,6 @@ data class ParsedArticle(
 
 sealed interface Status {
     object Success: Status
+    object Loading: Status
     data class ERROR(val msg: String): Status
 }

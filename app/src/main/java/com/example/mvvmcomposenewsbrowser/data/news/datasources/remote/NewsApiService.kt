@@ -33,3 +33,13 @@ enum class NewsCategory(val tag: String) {
     SPORTS("sports"),
     TECHNOLOGY("technology")
 }
+
+fun NewsCategory.toChinese() = when(this) {
+    NewsCategory.WHATEVER -> "綜合"
+    NewsCategory.BUSINESS -> "商業"
+    NewsCategory.ENTERTAINMENT -> "娛樂"
+    NewsCategory.HEALTH -> "健康"
+    NewsCategory.SCIENCE -> "科學"
+    NewsCategory.SPORTS -> "體育"
+    NewsCategory.TECHNOLOGY -> "科技"
+}
