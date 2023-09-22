@@ -24,12 +24,12 @@ interface NewsApiService {
 
 }
 
-object NewsCategory {
-    const val WHATEVER = "whatever"
-    const val BUSINESS = "business"
-    const val ENTERTAINMENT = "entertainment"
-    const val HEALTH = "health"
-    const val SCIENCE = "science"
-    const val SPORTS = "sports"
-    const val TECHNOLOGY = "technology"
+enum class NewsCategory(val tag: String) {
+    WHATEVER("whatever"),
+    BUSINESS("business"),
+    ENTERTAINMENT("entertainment"),
+    HEALTH("health"),
+    SCIENCE("science"),
+    SPORTS("sports"),
+    TECHNOLOGY("technology")
 }

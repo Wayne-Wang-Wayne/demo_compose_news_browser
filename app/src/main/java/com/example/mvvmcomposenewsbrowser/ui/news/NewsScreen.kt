@@ -8,6 +8,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,9 +41,12 @@ fun NewsScreen(
     viewModel: NewsViewModel = hiltViewModel()
 ) {
     val newsUiState by viewModel.newsUiState.collectAsStateWithLifecycle()
+    val newCategory by rememberSaveable {
+        mutableStateOf(NewsCategory.WHATEVER)
+    }
 
-    LaunchedEffect(viewModel) {
-        viewModel.getFreshNews(NewsCategory.WHATEVER)
+    LaunchedEffect(newCategory) {
+        viewModel.getFreshNews(newCategory)
     }
 
     Scaffold(
@@ -61,6 +66,7 @@ fun NewsScreen(
             isError = newsUiState.isError,
             newsList = newsUiState.newsList,
             errMsg = newsUiState.errorMsg,
+            selectedCategory = newsUiState.newsCategory,
             modifier = Modifier.padding(it)
         )
     }
@@ -72,6 +78,7 @@ fun NewsScreenBody(
     isError: Boolean,
     newsList: List<ParsedArticle>,
     errMsg: String,
+    selectedCategory: NewsCategory,
     modifier: Modifier = Modifier,
     contentsListState: LazyListState = rememberLazyListState(),
     pickerListState: LazyListState = rememberLazyListState()
@@ -80,6 +87,7 @@ fun NewsScreenBody(
         modifier = modifier
     ) {
         NewsCategoryPicker(
+            selectedCategory = selectedCategory,
             pickerListState = pickerListState
         )
         if (isLoading) {
@@ -204,6 +212,7 @@ fun NewsListCard(
 
 @Composable
 fun NewsCategoryPicker(
+    selectedCategory: NewsCategory,
     pickerListState: LazyListState,
     modifier: Modifier = Modifier
 ) {

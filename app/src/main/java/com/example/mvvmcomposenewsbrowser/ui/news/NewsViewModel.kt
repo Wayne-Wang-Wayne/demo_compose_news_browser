@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class NewsUiState(
+    val newsCategory: NewsCategory = NewsCategory.WHATEVER,
     val isLoading: Boolean = false,
     val isError: Boolean = false,
     val errorMsg: String = "",
@@ -29,11 +30,12 @@ class NewsViewModel @Inject constructor(
     private val _newsUiState: MutableStateFlow<NewsUiState> = MutableStateFlow(NewsUiState(isLoading = true))
     val newsUiState = _newsUiState.asStateFlow()
 
-    fun getFreshNews(category: String) {
-        if (category == NewsCategory.WHATEVER) {
+    fun getFreshNews(newsCategory: NewsCategory) {
+        _newsUiState.update { it.copy(newsCategory = newsCategory) }
+        if (newsCategory == NewsCategory.WHATEVER) {
             newsRepository.getWhateverNews().updateNewsUiState()
         } else {
-            newsRepository.getSpecificNews(category).updateNewsUiState()
+            newsRepository.getSpecificNews(newsCategory.tag).updateNewsUiState()
         }
     }
 
