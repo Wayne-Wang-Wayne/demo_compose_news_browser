@@ -1,18 +1,24 @@
 package com.example.mvvmcomposenewsbrowser.ui.news
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -29,10 +35,7 @@ import com.example.mvvmcomposenewsbrowser.R
 import com.example.mvvmcomposenewsbrowser.data.news.ParsedArticle
 import com.example.mvvmcomposenewsbrowser.data.news.datasources.remote.NewsCategory
 import com.example.mvvmcomposenewsbrowser.ui.theme.MVVMComposeNewsBrowserTheme
-import com.example.mvvmcomposenewsbrowser.ui.util.DrawerIcon
-import com.example.mvvmcomposenewsbrowser.ui.util.HeartButton
-import com.example.mvvmcomposenewsbrowser.ui.util.MyTopAppBar
-import com.example.mvvmcomposenewsbrowser.ui.util.ShimmerLoadingBlock
+import com.example.mvvmcomposenewsbrowser.ui.util.*
 
 @Composable
 fun NewsScreen(
@@ -90,12 +93,11 @@ fun NewsScreenBody(
             selectedCategory = selectedCategory,
             pickerListState = pickerListState
         )
-        if (isLoading) {
-
-        } else if (isError) {
+        if (isError) {
 
         } else {
             NewsSuccessBody(
+                isLoading = isLoading,
                 newsList = newsList,
                 contentsListState = contentsListState
             )
@@ -105,6 +107,7 @@ fun NewsScreenBody(
 
 @Composable
 fun NewsSuccessBody(
+    isLoading: Boolean,
     newsList: List<ParsedArticle>,
     contentsListState: LazyListState,
     modifier: Modifier = Modifier,
@@ -117,18 +120,26 @@ fun NewsSuccessBody(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         modifier = modifier
     ) {
-        items(
-            newsList,
-            key = { it.title }
-        ) { parsedArticle ->
-            NewsListCard(
-                author = parsedArticle.author,
-                title = parsedArticle.title,
-                url = parsedArticle.url,
-                publishedAt = parsedArticle.publishedAt,
-                imgUrl = parsedArticle.imgUrl,
-                isLiked = parsedArticle.isLiked
-            )
+        if(isLoading) {
+            for(count in 1..8) {
+                item {
+                    ShimmerNewsCard()
+                }
+            }
+        } else {
+            items(
+                newsList,
+                key = { it.title }
+            ) { parsedArticle ->
+                NewsListCard(
+                    author = parsedArticle.author,
+                    title = parsedArticle.title,
+                    url = parsedArticle.url,
+                    publishedAt = parsedArticle.publishedAt,
+                    imgUrl = parsedArticle.imgUrl,
+                    isLiked = parsedArticle.isLiked
+                )
+            }
         }
     }
 }
@@ -254,5 +265,85 @@ fun NewsScreenPreview() {
         NewsScreen(
             onTopLeftIconPress = {}
         )
+    }
+}
+
+/**
+ * News Shimmer Composable
+ * */
+
+@Composable
+fun ShimmerLoadingBlock(
+    modifier: Modifier = Modifier
+) {
+    Spacer(
+        modifier = modifier
+            .showShimmerBackground()
+            .size(100.dp)
+    )
+}
+
+@Composable
+fun ShimmerNewsCard(
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier
+            .height(120.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(
+                vertical = 8.dp,
+                horizontal = 10.dp
+            ),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            ShimmerLoadingBlock()
+            Spacer(
+                modifier = Modifier.width(8.dp)
+            )
+            Column(
+                verticalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxHeight()
+            ) {
+                Column {
+                    for (i in 1..2) {
+                        Spacer(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(20.dp)
+                                .showShimmerBackground()
+                        )
+                        Spacer(
+                            modifier = Modifier.height(6.dp)
+                        )
+                    }
+                }
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Bottom,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    HeartButton()
+                    Column(
+                        horizontalAlignment = Alignment.End
+                    ) {
+                        Spacer(modifier = Modifier
+                            .width(100.dp)
+                            .height(12.dp)
+                            .showShimmerBackground()
+                        )
+                        Spacer(
+                            modifier = Modifier.height(6.dp)
+                        )
+                        Spacer(modifier = Modifier
+                            .width(200.dp)
+                            .height(15.dp)
+                            .showShimmerBackground()
+                        )
+                    }
+                }
+            }
+        }
     }
 }
