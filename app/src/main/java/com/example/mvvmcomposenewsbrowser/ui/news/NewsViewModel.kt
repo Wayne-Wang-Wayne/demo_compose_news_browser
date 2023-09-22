@@ -39,6 +39,30 @@ class NewsViewModel @Inject constructor(
         }
     }
 
+    fun toggleLike(parsedArticle: ParsedArticle) {
+        _newsUiState.update { newsUiState ->
+            val targetIndex = newsUiState.newsList.indexOf(parsedArticle)
+            if(targetIndex != -1) {
+                val currentArticle = newsUiState.newsList[targetIndex]
+                val isLiked = currentArticle.isLiked
+                viewModelScope.launch {
+                    if(isLiked) {
+                        newsRepository.dislikeArticle(parsedArticle)
+                    } else {
+                        newsRepository.likeArticle(parsedArticle)
+                    }
+                }
+                val updatedNewsList = newsUiState.newsList.toMutableList()
+                updatedNewsList[targetIndex] = currentArticle.copy(isLiked = !isLiked)
+                newsUiState.copy(
+                    newsList = updatedNewsList
+                )
+            } else {
+                newsUiState
+            }
+        }
+    }
+
     private fun Flow<ParsedNewsListData>.updateNewsUiState() = viewModelScope.launch {
         this@updateNewsUiState.stateIn(
             scope = viewModelScope,

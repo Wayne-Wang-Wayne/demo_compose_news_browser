@@ -8,6 +8,10 @@ interface NewsRepository {
 
     fun getSpecificNews(category: String) : Flow<ParsedNewsListData>
 
+    suspend fun likeArticle(parsedArticle: ParsedArticle)
+
+    suspend fun dislikeArticle(parsedArticle: ParsedArticle)
+
 }
 
 data class ParsedNewsListData(
@@ -21,7 +25,7 @@ data class ParsedArticle(
     val url: String,
     val publishedAt: String,
     val imgUrl: String,
-    val isLiked: Boolean
+    var isLiked: Boolean
 )
 
 sealed interface Status {

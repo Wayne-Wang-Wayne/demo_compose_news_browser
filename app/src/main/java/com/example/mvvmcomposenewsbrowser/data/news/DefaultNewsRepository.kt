@@ -1,6 +1,7 @@
 package com.example.mvvmcomposenewsbrowser.data.news
 
 import com.example.mvvmcomposenewsbrowser.data.news.datasources.local.LikedArticleDao
+import com.example.mvvmcomposenewsbrowser.data.news.datasources.local.LocalLikedArticle
 import com.example.mvvmcomposenewsbrowser.data.news.datasources.remote.NewsApiData
 import com.example.mvvmcomposenewsbrowser.data.news.datasources.remote.NewsApiService
 import com.example.mvvmcomposenewsbrowser.di.ApplicationScope
@@ -25,6 +26,30 @@ class DefaultNewsRepository @Inject constructor(
 
     override fun getSpecificNews(category: String): Flow<ParsedNewsListData> =
         newsApiService.getSpecificNews(category = category).toParsedNews()
+
+    override suspend fun likeArticle(parsedArticle: ParsedArticle) = withContext(dispatcher) {
+        likedArticleDao.insert(
+            LocalLikedArticle(
+                author = parsedArticle.author,
+                title = parsedArticle.title,
+                url = parsedArticle.url,
+                publishedAt = parsedArticle.publishedAt,
+                imgUrl = parsedArticle.imgUrl
+            )
+        )
+    }
+
+    override suspend fun dislikeArticle(parsedArticle: ParsedArticle) = withContext(dispatcher) {
+        likedArticleDao.delete(
+            LocalLikedArticle(
+                author = parsedArticle.author,
+                title = parsedArticle.title,
+                url = parsedArticle.url,
+                publishedAt = parsedArticle.publishedAt,
+                imgUrl = parsedArticle.imgUrl
+            )
+        )
+    }
 
     private fun Flow<Response<NewsApiData>>.toParsedNews() = map { response ->
         val articles = response.body()?.articles

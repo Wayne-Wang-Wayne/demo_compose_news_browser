@@ -72,6 +72,7 @@ fun NewsScreen(
             errMsg = newsUiState.errorMsg,
             selectedCategory = newsUiState.newsCategory,
             onCategorySelect = viewModel::getFreshNews,
+            onLikeClick = viewModel::toggleLike,
             modifier = Modifier.padding(it)
         )
     }
@@ -85,6 +86,7 @@ fun NewsScreenBody(
     errMsg: String,
     selectedCategory: NewsCategory,
     onCategorySelect: (NewsCategory) -> Unit,
+    onLikeClick: (ParsedArticle) -> Unit,
     modifier: Modifier = Modifier,
     contentsListState: LazyListState = rememberLazyListState(),
     pickerListState: LazyListState = rememberLazyListState()
@@ -103,7 +105,8 @@ fun NewsScreenBody(
             NewsSuccessBody(
                 isLoading = isLoading,
                 newsList = newsList,
-                contentsListState = contentsListState
+                contentsListState = contentsListState,
+                onLikeClick = onLikeClick
             )
         }
     }
@@ -114,9 +117,9 @@ fun NewsSuccessBody(
     isLoading: Boolean,
     newsList: List<ParsedArticle>,
     contentsListState: LazyListState,
-    modifier: Modifier = Modifier,
-//    onArticleClick: (String) -> Unit,
-//    onHeartClick: (String) -> Unit
+    //    onArticleClick: (String) -> Unit,
+    onLikeClick: (ParsedArticle) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     LazyColumn(
         state = contentsListState,
@@ -126,14 +129,14 @@ fun NewsSuccessBody(
     ) {
         if(isLoading) {
             for(count in 1..8) {
-                item {
+                item(key = count) {
                     ShimmerNewsCard()
                 }
             }
         } else {
             items(
                 newsList,
-                key = { it.title }
+                key = { it.url }
             ) { parsedArticle ->
                 NewsListCard(
                     author = parsedArticle.author,
@@ -141,7 +144,10 @@ fun NewsSuccessBody(
                     url = parsedArticle.url,
                     publishedAt = parsedArticle.publishedAt,
                     imgUrl = parsedArticle.imgUrl,
-                    isLiked = parsedArticle.isLiked
+                    isLiked = parsedArticle.isLiked,
+                    onLikeClick = {
+                        onLikeClick(parsedArticle)
+                    }
                 )
             }
         }
@@ -156,6 +162,7 @@ fun NewsListCard(
     publishedAt: String,
     imgUrl: String,
     isLiked: Boolean,
+    onLikeClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -206,7 +213,10 @@ fun NewsListCard(
                         verticalAlignment = Alignment.Bottom,
                         modifier = Modifier.fillMaxWidth()
                     ){
-                        HeartButton()
+                        HeartButton(
+                            isLiked = isLiked,
+                            onLikeClick = onLikeClick
+                        )
                         Column(
                             horizontalAlignment = Alignment.End
                         ) {
@@ -339,7 +349,10 @@ fun ShimmerNewsCard(
                     verticalAlignment = Alignment.Bottom,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    HeartButton()
+                    HeartButton(
+                        isLiked = false,
+                        onLikeClick = {}
+                    )
                     Column(
                         horizontalAlignment = Alignment.End
                     ) {

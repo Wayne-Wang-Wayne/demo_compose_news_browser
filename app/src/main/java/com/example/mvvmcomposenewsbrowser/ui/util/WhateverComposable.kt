@@ -24,9 +24,10 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun HeartButton(
+    isLiked: Boolean,
+    onLikeClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var isLiked by remember { mutableStateOf(false) }
     val scale by animateFloatAsState(
         if (isLiked) 1.2f else 1f,
         animationSpec = spring(
@@ -39,7 +40,7 @@ fun HeartButton(
         modifier = modifier
             .size(36.dp)
             .clickable {
-                isLiked = !isLiked
+                onLikeClick()
             },
         contentAlignment = Alignment.Center
     ) {
