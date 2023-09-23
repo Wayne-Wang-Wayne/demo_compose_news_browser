@@ -177,7 +177,7 @@ fun NewsListCard(
             ) {
                 SubcomposeAsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data("https://static.politico.com/9f/56/723290e644c4bbf14ae3a4873cb4/auto-workers-strike-55578.jpg")
+                        .data(imgUrl)
                         .crossfade(true)
                         .build(),
                     loading = {

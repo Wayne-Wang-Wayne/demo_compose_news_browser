@@ -4,6 +4,7 @@ import com.example.mvvmcomposenewsbrowser.data.news.datasources.local.LikedArtic
 import com.example.mvvmcomposenewsbrowser.data.news.datasources.local.LocalLikedArticle
 import com.example.mvvmcomposenewsbrowser.data.news.datasources.remote.NewsApiData
 import com.example.mvvmcomposenewsbrowser.data.news.datasources.remote.NewsApiService
+import com.example.mvvmcomposenewsbrowser.data.news.datasources.remote.UrlBasicInfoService
 import com.example.mvvmcomposenewsbrowser.di.ApplicationScope
 import com.example.mvvmcomposenewsbrowser.di.DefaultDispatcher
 import kotlinx.coroutines.*
@@ -17,6 +18,7 @@ import javax.inject.Inject
 class DefaultNewsRepository @Inject constructor(
     private val newsApiService: NewsApiService,
     private val likedArticleDao: LikedArticleDao,
+    private val urlBasicInfoService: UrlBasicInfoService,
     @DefaultDispatcher private val dispatcher: CoroutineDispatcher,
     @ApplicationScope private val scope: CoroutineScope,
 ): NewsRepository {
@@ -62,7 +64,7 @@ class DefaultNewsRepository @Inject constructor(
                     title = article.title,
                     url = article.url,
                     publishedAt = article.publishedAt,
-                    imgUrl = "",
+                    imgUrl = urlBasicInfoService.getLinkBasicInfo(article.url).image ?: "",
                     isLiked = likedArticleDao.isLiked(article.title)
                 )
             }

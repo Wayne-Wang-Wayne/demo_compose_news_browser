@@ -6,7 +6,9 @@ import com.example.mvvmcomposenewsbrowser.data.news.DefaultNewsRepository
 import com.example.mvvmcomposenewsbrowser.data.news.NewsRepository
 import com.example.mvvmcomposenewsbrowser.data.news.datasources.local.LikedArticleDao
 import com.example.mvvmcomposenewsbrowser.data.news.datasources.local.NewsDatabase
+import com.example.mvvmcomposenewsbrowser.data.news.datasources.remote.DefaultUrlBasicInfoService
 import com.example.mvvmcomposenewsbrowser.data.news.datasources.remote.NewsApiService
+import com.example.mvvmcomposenewsbrowser.data.news.datasources.remote.UrlBasicInfoService
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -49,6 +51,8 @@ object NewsRemoteDataModule {
     @Provides
     fun provideNewsApiService(retrofit: Retrofit): NewsApiService = retrofit.create(NewsApiService::class.java)
 
+    @Provides
+    fun bindUrlBasicInfoService(repository: DefaultUrlBasicInfoService): UrlBasicInfoService = repository
 }
 
 @Module
