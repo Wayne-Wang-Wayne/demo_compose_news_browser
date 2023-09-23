@@ -58,17 +58,21 @@ class DefaultNewsRepository @Inject constructor(
         if (articles.isNullOrEmpty()) {
             ParsedNewsListData(null, Status.ERROR(response.message()))
         } else {
-            val parsedArticle = articles.map { article ->
-                ParsedArticle(
-                    author = article.author,
-                    title = article.title,
-                    url = article.url,
-                    publishedAt = article.publishedAt,
-                    imgUrl = urlBasicInfoService.getLinkBasicInfo(article.url).image ?: "",
-                    isLiked = likedArticleDao.isLiked(article.title)
-                )
+            coroutineScope {
+                val parsedArticle = articles.map { article ->
+                    async {
+                        ParsedArticle(
+                            author = article.author,
+                            title = article.title,
+                            url = article.url,
+                            publishedAt = article.publishedAt,
+                            imgUrl = urlBasicInfoService.getLinkBasicInfo(article.url).image ?: "",
+                            isLiked = likedArticleDao.isLiked(article.title)
+                        )
+                    }
+                }
+                ParsedNewsListData(parsedArticle.awaitAll(), Status.Success)
             }
-            ParsedNewsListData(parsedArticle, Status.Success)
         }
     }.catch {
         emit(ParsedNewsListData(null, Status.ERROR(it.message ?: "")))
