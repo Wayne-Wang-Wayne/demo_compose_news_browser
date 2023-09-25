@@ -102,7 +102,7 @@ fun NewsScreenBody(
             pickerListState = pickerListState,
             onCategorySelect = onCategorySelect
         )
-        if (!isError) {
+        if (isError) {
             LaunchedEffect(errMsg) {
                 Log.d(NEWS_SCREEN_TAG, errMsg)
             }
