@@ -64,13 +64,14 @@ class DefaultNewsRepository @Inject constructor(
                 val parsedArticle = articles.map { article ->
                     async {
                         val linkBasicInfo = urlBasicInfoService.getLinkBasicInfo(article.url)
+                        val url = linkBasicInfo.redirectUrl?.encodeUrl() ?: article.url.encodeUrl()
                         ParsedArticle(
                             author = article.author,
                             title = article.title,
-                            url = linkBasicInfo.redirectUrl?.encodeUrl() ?: article.url.encodeUrl(),
+                            url = url,
                             publishedAt = article.publishedAt,
                             imgUrl = linkBasicInfo.image ?: "",
-                            isLiked = likedArticleDao.isLiked(article.url)
+                            isLiked = likedArticleDao.isLiked(url)
                         )
                     }
                 }
