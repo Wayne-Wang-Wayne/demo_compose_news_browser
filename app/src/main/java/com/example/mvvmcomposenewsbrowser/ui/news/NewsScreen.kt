@@ -1,5 +1,7 @@
 package com.example.mvvmcomposenewsbrowser.ui.news
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
@@ -38,6 +40,8 @@ import com.example.mvvmcomposenewsbrowser.data.news.datasources.remote.toChinese
 import com.example.mvvmcomposenewsbrowser.ui.theme.MVVMComposeNewsBrowserTheme
 import com.example.mvvmcomposenewsbrowser.ui.util.*
 
+private const val NEWS_SCREEN_TAG = "NEWS_SCREEN_TAG"
+
 @Composable
 fun NewsScreen(
     onTopLeftIconPress: () -> Unit,
@@ -45,12 +49,9 @@ fun NewsScreen(
     viewModel: NewsViewModel = hiltViewModel()
 ) {
     val newsUiState by viewModel.newsUiState.collectAsStateWithLifecycle()
-    val newCategory by rememberSaveable {
-        mutableStateOf(NewsCategory.WHATEVER)
-    }
 
-    LaunchedEffect(newCategory) {
-        viewModel.getFreshNews(newCategory)
+    LaunchedEffect(viewModel) {
+        viewModel.getFreshNews(NewsCategory.WHATEVER)
     }
 
     Scaffold(
@@ -73,6 +74,7 @@ fun NewsScreen(
             selectedCategory = newsUiState.newsCategory,
             onCategorySelect = viewModel::getFreshNews,
             onLikeClick = viewModel::toggleLike,
+            onRetry = viewModel::getFreshNews,
             modifier = Modifier.padding(it)
         )
     }
@@ -87,6 +89,7 @@ fun NewsScreenBody(
     selectedCategory: NewsCategory,
     onCategorySelect: (NewsCategory) -> Unit,
     onLikeClick: (ParsedArticle) -> Unit,
+    onRetry: (NewsCategory) -> Unit,
     modifier: Modifier = Modifier,
     contentsListState: LazyListState = rememberLazyListState(),
     pickerListState: LazyListState = rememberLazyListState()
@@ -99,8 +102,15 @@ fun NewsScreenBody(
             pickerListState = pickerListState,
             onCategorySelect = onCategorySelect
         )
-        if (isError) {
-            // TODO Call Error Body
+        if (!isError) {
+            LaunchedEffect(errMsg) {
+                Log.d(NEWS_SCREEN_TAG, errMsg)
+            }
+            ErrorRetryLayout(
+                onRetryClick = {
+                    onRetry(selectedCategory)
+                }
+            )
         } else {
             NewsSuccessBody(
                 isLoading = isLoading,
@@ -141,7 +151,7 @@ fun NewsSuccessBody(
                 NewsListCard(
                     author = parsedArticle.author,
                     title = parsedArticle.title,
-                    url = parsedArticle.url,
+                    onItemClick = {},
                     publishedAt = parsedArticle.publishedAt,
                     imgUrl = parsedArticle.imgUrl,
                     isLiked = parsedArticle.isLiked,
@@ -158,7 +168,7 @@ fun NewsSuccessBody(
 fun NewsListCard(
     author: String,
     title: String,
-    url: String,
+    onItemClick: () -> Unit,
     publishedAt: String,
     imgUrl: String,
     isLiked: Boolean,
