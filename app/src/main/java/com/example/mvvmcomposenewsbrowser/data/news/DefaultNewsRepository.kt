@@ -63,12 +63,13 @@ class DefaultNewsRepository @Inject constructor(
             coroutineScope {
                 val parsedArticle = articles.map { article ->
                     async {
+                        val linkBasicInfo = urlBasicInfoService.getLinkBasicInfo(article.url)
                         ParsedArticle(
                             author = article.author,
                             title = article.title,
-                            url = article.url.encodeUrl(),
+                            url = linkBasicInfo.redirectUrl?.encodeUrl() ?: article.url.encodeUrl(),
                             publishedAt = article.publishedAt,
-                            imgUrl = urlBasicInfoService.getLinkBasicInfo(article.url).image ?: "",
+                            imgUrl = linkBasicInfo.image ?: "",
                             isLiked = likedArticleDao.isLiked(article.url)
                         )
                     }

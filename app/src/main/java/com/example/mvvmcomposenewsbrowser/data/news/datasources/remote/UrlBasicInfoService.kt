@@ -49,6 +49,7 @@ class DefaultUrlBasicInfoService @Inject constructor(
 
             val linkElement: Element = document.select("a").first()!!
             val redirectUrl: String = linkElement.attr("href")
+            openGraphResult.redirectUrl = redirectUrl
             val response = Jsoup.connect(redirectUrl)
                 .ignoreContentType(true)
                 .userAgent(AGENT)
@@ -96,6 +97,7 @@ class DefaultUrlBasicInfoService @Inject constructor(
 }
 
 data class OpenGraphResult(
+    var redirectUrl: String? = null,
     var title: String? = null,
     var description: String? = null,
     var url: String? = null,
