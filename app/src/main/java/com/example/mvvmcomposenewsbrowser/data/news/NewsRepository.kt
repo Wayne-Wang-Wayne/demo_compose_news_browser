@@ -4,9 +4,9 @@ import kotlinx.coroutines.flow.Flow
 
 interface NewsRepository {
 
-    fun getWhateverNews() : Flow<ParsedNewsListData>
+    fun getWhateverNews(): Flow<ParsedNewsListData>
 
-    fun getSpecificNews(category: String) : Flow<ParsedNewsListData>
+    fun getSpecificNews(category: String): Flow<ParsedNewsListData>
 
     suspend fun likeArticle(parsedArticle: ParsedArticle)
 

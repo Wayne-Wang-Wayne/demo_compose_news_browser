@@ -106,4 +106,7 @@ dependencies {
 
     // Jsoup
     implementation 'org.jsoup:jsoup:1.15.1'
+
+    // Compose WebView
+    implementation "com.google.accompanist:accompanist-webview:0.32.0"
 }

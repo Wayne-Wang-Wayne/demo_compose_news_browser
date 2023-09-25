@@ -9,11 +9,11 @@ import com.example.mvvmcomposenewsbrowser.ui.MyScreens.NEWS_SCREEN
 
 private object MyScreens {
     const val NEWS_SCREEN = "news"
-    const val NEWS_DETAIL_SCREEN = "newsDetail"
+    const val NEWS_DETAIL_SCREEN = "news_detail"
 }
 
 object MyDestinationsArgs {
-    const val NEWS_LINK_ARG = "newsLink"
+    const val NEWS_LINK_ARG = "news_link"
 }
 
 object MyDestinations {
@@ -32,7 +32,9 @@ class MyNavigationActions(private val navController: NavHostController) {
         }
     }
 
-    fun navigateToNewsDetail(newsLink: String) {
+    fun navigateToNewsDetail(
+        newsLink: String
+    ) {
         navController.navigate("$NEWS_DETAIL_SCREEN/$newsLink")
     }
 

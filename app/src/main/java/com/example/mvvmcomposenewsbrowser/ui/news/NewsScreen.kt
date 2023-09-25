@@ -2,6 +2,7 @@ package com.example.mvvmcomposenewsbrowser.ui.news
 
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -38,6 +39,7 @@ private const val NEWS_SCREEN_TAG = "NEWS_SCREEN_TAG"
 @Composable
 fun NewsScreen(
     onTopLeftIconPress: () -> Unit,
+    onNewsSelect: (ParsedArticle) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: NewsViewModel = hiltViewModel()
 ) {
@@ -45,6 +47,22 @@ fun NewsScreen(
 
     LaunchedEffect(viewModel) {
         viewModel.getFreshNews(NewsCategory.WHATEVER)
+    }
+
+    val vMIsLoading by derivedStateOf {
+        newsUiState.isLoading
+    }
+    val vMIsError by derivedStateOf {
+        newsUiState.isError
+    }
+    val vMNewsList by derivedStateOf {
+        newsUiState.newsList
+    }
+    val vMErrorMsg by derivedStateOf {
+        newsUiState.errorMsg
+    }
+    val vMNewsCategory by derivedStateOf {
+        newsUiState.newsCategory
     }
 
     Scaffold(
@@ -60,14 +78,15 @@ fun NewsScreen(
         }
     ) {
         NewsScreenBody(
-            isLoading = newsUiState.isLoading,
-            isError = newsUiState.isError,
-            newsList = newsUiState.newsList,
-            errMsg = newsUiState.errorMsg,
-            selectedCategory = newsUiState.newsCategory,
+            isLoading = vMIsLoading,
+            isError = vMIsError,
+            newsList = vMNewsList,
+            errMsg = vMErrorMsg,
+            selectedCategory = vMNewsCategory,
             onCategorySelect = viewModel::getFreshNews,
             onLikeClick = viewModel::toggleLike,
             onRetry = viewModel::getFreshNews,
+            onNewsSelect = onNewsSelect,
             modifier = Modifier.padding(it)
         )
     }
@@ -84,6 +103,7 @@ fun NewsScreenBody(
     onCategorySelect: (NewsCategory) -> Unit,
     onLikeClick: (ParsedArticle) -> Unit,
     onRetry: (NewsCategory) -> Unit,
+    onNewsSelect: (ParsedArticle) -> Unit,
     modifier: Modifier = Modifier,
     contentsListState: LazyListState = rememberLazyListState(),
     pickerListState: LazyListState = rememberLazyListState()
@@ -112,7 +132,8 @@ fun NewsScreenBody(
                     isLoading = isLoading,
                     newsList = newsList,
                     contentsListState = contentsListState,
-                    onLikeClick = onLikeClick
+                    onLikeClick = onLikeClick,
+                    onNewsSelect = onNewsSelect
                 )
                 PullRefreshIndicator(isLoading, pullRefreshState, Modifier.align(Alignment.TopCenter))
             }
@@ -125,7 +146,7 @@ fun NewsSuccessBody(
     isLoading: Boolean,
     newsList: List<ParsedArticle>,
     contentsListState: LazyListState,
-    //    onArticleClick: (String) -> Unit,
+    onNewsSelect: (ParsedArticle) -> Unit,
     onLikeClick: (ParsedArticle) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -149,7 +170,9 @@ fun NewsSuccessBody(
                 NewsListCard(
                     author = parsedArticle.author,
                     title = parsedArticle.title,
-                    onItemClick = {},
+                    onNewsSelect = {
+                        onNewsSelect(parsedArticle)
+                    },
                     publishedAt = parsedArticle.publishedAt,
                     imgUrl = parsedArticle.imgUrl,
                     isLiked = parsedArticle.isLiked,
@@ -166,7 +189,7 @@ fun NewsSuccessBody(
 fun NewsListCard(
     author: String,
     title: String,
-    onItemClick: () -> Unit,
+    onNewsSelect: () -> Unit,
     publishedAt: String,
     imgUrl: String,
     isLiked: Boolean,
@@ -174,7 +197,10 @@ fun NewsListCard(
     modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier.height(120.dp),
+        modifier = modifier.height(120.dp)
+            .clickable {
+                onNewsSelect()
+            },
     ) {
             Row(
                 modifier = Modifier.padding(
@@ -296,7 +322,8 @@ fun PickItem(
 fun NewsScreenPreview() {
     MVVMComposeNewsBrowserTheme {
         NewsScreen(
-            onTopLeftIconPress = {}
+            onTopLeftIconPress = {},
+            onNewsSelect = {}
         )
     }
 }

@@ -1,7 +1,12 @@
 package com.example.mvvmcomposenewsbrowser.ui.util
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.util.Log
+import android.webkit.WebView
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -15,11 +20,11 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.mvvmcomposenewsbrowser.R
+import com.google.accompanist.web.*
 
 @Composable
 fun HeartButton(
@@ -103,5 +108,51 @@ fun ErrorRetryLayout(
         OutlinedButton(onClick = onRetryClick) {
             Text(text = stringResource(R.string.reload))
         }
+    }
+}
+
+@Composable
+fun WebViewWithLoading(
+    url: String,
+    modifier: Modifier = Modifier
+) {
+    val state = rememberWebViewState(url = url)
+    val navigator = rememberWebViewNavigator()
+
+    Column(
+        modifier = modifier
+    ) {
+
+        val loadingState = state.loadingState
+        if (loadingState is LoadingState.Loading) {
+            LinearProgressIndicator(
+                progress = loadingState.progress,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        val webClient = remember {
+            object : AccompanistWebViewClient() {
+                override fun onPageStarted(
+                    view: WebView,
+                    url: String?,
+                    favicon: Bitmap?
+                ) {
+                    super.onPageStarted(view, url, favicon)
+                    Log.d("Accompanist WebView", "Page started loading for $url")
+                }
+            }
+        }
+
+        WebView(
+            state = state,
+            modifier = Modifier
+                .weight(1f),
+            navigator = navigator,
+            onCreated = { webView ->
+                webView.settings.javaScriptEnabled = false
+            },
+            client = webClient
+        )
     }
 }

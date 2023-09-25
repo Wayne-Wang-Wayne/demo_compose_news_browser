@@ -9,13 +9,12 @@ interface LikedArticleDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(localLikedArticle: LocalLikedArticle)
 
-    @Query("SELECT EXISTS(SELECT * FROM liked_article WHERE title = :title)")
-    fun isLiked(title: String): Boolean
+    @Query("SELECT EXISTS(SELECT * FROM liked_article WHERE url = :url)")
+    fun isLiked(url: String): Boolean
 
     @Query("SELECT * from liked_article")
-    fun getLikedArticle(): Flow<List<LocalLikedArticle>>
+    fun getLikedNews(): Flow<List<LocalLikedArticle>>
 
     @Delete
     suspend fun delete(localLikedArticle: LocalLikedArticle)
-
 }

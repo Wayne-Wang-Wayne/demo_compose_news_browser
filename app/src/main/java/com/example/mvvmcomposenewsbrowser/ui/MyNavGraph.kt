@@ -14,6 +14,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.mvvmcomposenewsbrowser.ui.news.NewsScreen
+import com.example.mvvmcomposenewsbrowser.ui.newsdetail.NewsDetailScreen
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
@@ -43,7 +44,16 @@ fun MyNavGraph(
         composable(
             MyDestinations.NEWS_ROUTE,
         ) {
-            NewsScreen(onTopLeftIconPress = {  })
+            NewsScreen(
+                onTopLeftIconPress = {
+
+                },
+                onNewsSelect = { parsedArticle ->
+                    navAction.navigateToNewsDetail(
+                        parsedArticle.url
+                    )
+                }
+            )
         }
 
         composable(
@@ -56,7 +66,12 @@ fun MyNavGraph(
             )
         ) { entry ->
             val newsLink = entry.arguments?.getString(MyDestinationsArgs.NEWS_LINK_ARG) ?: ""
-            // TODO: call News Detail page function
+            NewsDetailScreen(
+                newsLink = newsLink,
+                onTopLeftIconPress = {
+                    navAction.popBack()
+                }
+            )
         }
     }
 }

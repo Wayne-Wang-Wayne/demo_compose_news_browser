@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import retrofit2.Response
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import javax.inject.Inject
 
 class DefaultNewsRepository @Inject constructor(
@@ -24,10 +26,10 @@ class DefaultNewsRepository @Inject constructor(
 ): NewsRepository {
 
     override fun getWhateverNews(): Flow<ParsedNewsListData> =
-        newsApiService.getWhateverNews().toParsedNews()
+        newsApiService.getWhateverNews().apiToParsedNews()
 
     override fun getSpecificNews(category: String): Flow<ParsedNewsListData> =
-        newsApiService.getSpecificNews(category = category).toParsedNews()
+        newsApiService.getSpecificNews(category = category).apiToParsedNews()
 
     override suspend fun likeArticle(parsedArticle: ParsedArticle) = withContext(dispatcher) {
         likedArticleDao.insert(
@@ -53,7 +55,7 @@ class DefaultNewsRepository @Inject constructor(
         )
     }
 
-    private fun Flow<Response<NewsApiData>>.toParsedNews() = map { response ->
+    private fun Flow<Response<NewsApiData>>.apiToParsedNews() = map { response ->
         val articles = response.body()?.articles
         if (articles.isNullOrEmpty()) {
             ParsedNewsListData(null, Status.ERROR(response.message()))
@@ -64,10 +66,10 @@ class DefaultNewsRepository @Inject constructor(
                         ParsedArticle(
                             author = article.author,
                             title = article.title,
-                            url = article.url,
+                            url = article.url.encodeUrl(),
                             publishedAt = article.publishedAt,
                             imgUrl = urlBasicInfoService.getLinkBasicInfo(article.url).image ?: "",
-                            isLiked = likedArticleDao.isLiked(article.title)
+                            isLiked = likedArticleDao.isLiked(article.url)
                         )
                     }
                 }
@@ -78,5 +80,27 @@ class DefaultNewsRepository @Inject constructor(
         emit(ParsedNewsListData(null, Status.ERROR(it.message ?: "")))
     }.flowOn(dispatcher)
 
+    private fun Flow<List<LocalLikedArticle>>.localToParsedNews() = map { article ->
+        ParsedNewsListData(
+            listOf(
+                ParsedArticle(
+                    author = article.first().author,
+                    title = article.first().title,
+                    url = article.first().url,
+                    publishedAt = article.first().publishedAt,
+                    imgUrl = article.first().imgUrl,
+                    isLiked = likedArticleDao.isLiked(article.first().url)
+                )
+            ),
+            Status.Success
+        )
+    }.catch {
+        emit(ParsedNewsListData(null, Status.ERROR(it.message ?: "")))
+    }.flowOn(dispatcher)
+
 }
+
+fun String.encodeUrl(): String =
+    URLEncoder.encode(this, StandardCharsets.UTF_8.toString())
+
 
