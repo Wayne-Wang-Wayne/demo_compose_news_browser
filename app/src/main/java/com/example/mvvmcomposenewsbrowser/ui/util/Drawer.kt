@@ -40,8 +40,7 @@ fun DrawerContent(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.Start
+        modifier = modifier.fillMaxSize()
     ) {
         DrawerHeader()
         DrawerBody()
@@ -64,7 +63,9 @@ fun DrawerHeader(
 fun DrawerBody(
     modifier: Modifier = Modifier
 ) {
-    Column {
+    Column(
+        modifier = modifier
+    ) {
         DrawerButton(isSelected = true)
         DrawerButton(isSelected = false)
     }
@@ -76,27 +77,26 @@ fun DrawerButton(
     modifier: Modifier = Modifier
 ) {
     val tintColor = if (isSelected) {
-        MaterialTheme.colorScheme.secondary
+        MaterialTheme.colorScheme.tertiary
     } else {
-        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
     }
     TextButton(
         onClick = { /*TODO*/ },
         modifier = modifier
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Spacer(
-                modifier = Modifier.width(5.dp)
-            )
             Icon(
                 Icons.Rounded.ShoppingCart,
                 contentDescription = null,
                 tint = tintColor
             )
             Spacer(
-                modifier = Modifier.width(10.dp)
+                modifier = Modifier.width(16.dp)
             )
             Text(
                 text = "我是按鈕",
