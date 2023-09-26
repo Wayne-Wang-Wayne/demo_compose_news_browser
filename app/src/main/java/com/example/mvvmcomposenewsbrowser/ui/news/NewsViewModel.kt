@@ -77,11 +77,7 @@ class NewsViewModel @Inject constructor(
     }
 
     private fun Flow<ParsedNewsListData>.updateNewsUiState() = viewModelScope.launch {
-        this@updateNewsUiState.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = ParsedNewsListData(listOf(), Status.Loading)
-        ).collect { parsedListData ->
+        this@updateNewsUiState.collect { parsedListData ->
             when (val currentStatus = parsedListData.status) {
                 is Status.Success -> {
                     if (parsedListData.parsedArticle.isNullOrEmpty()) {
@@ -111,17 +107,8 @@ class NewsViewModel @Inject constructor(
                         )
                     }
                 }
-                is Status.Loading -> {
-                    _newsUiState.update {
-                        it.copy(
-                            isError = false,
-                            isLoading = true,
-                        )
-                    }
-                }
             }
         }
     }
-
 }
 
