@@ -2,6 +2,7 @@ package com.example.mvvmcomposenewsbrowser.ui.util
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.ModalDrawer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ShoppingCart
 import androidx.compose.material3.*
@@ -9,21 +10,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mvvmcomposenewsbrowser.R
-import com.example.mvvmcomposenewsbrowser.ui.theme.MVVMComposeNewsBrowserTheme
+import androidx.compose.material.DrawerState
 
 
 @Composable
 fun AppDrawer(
     drawerState: DrawerState,
+    currentRoute: String,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
-    ModalNavigationDrawer(
+    ModalDrawer(
         drawerState = drawerState,
-        drawerContent = { }
+        drawerContent = {
+            DrawerContent(
+                currentRoute = currentRoute
+            )
+        }
     ) {
         content()
     }
@@ -31,6 +36,7 @@ fun AppDrawer(
 
 @Composable
 fun DrawerContent(
+    currentRoute: String,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -100,12 +106,14 @@ fun DrawerButton(
     }
 }
 
-@Preview("Drawer contents", showBackground = true)
-@Composable
-fun DrawerContentPreview() {
-    MVVMComposeNewsBrowserTheme {
-        Surface {
-            DrawerContent()
-        }
-    }
-}
+//@Preview("Drawer contents", showBackground = true)
+//@Composable
+//fun DrawerContentPreview() {
+//    MVVMComposeNewsBrowserTheme {
+//        Surface {
+//            DrawerContent()
+//        }
+//    }
+//}
+
+enum class Drawer

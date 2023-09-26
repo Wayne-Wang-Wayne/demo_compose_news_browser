@@ -1,6 +1,5 @@
 package com.example.mvvmcomposenewsbrowser.ui.news
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mvvmcomposenewsbrowser.data.news.NewsRepository
@@ -30,8 +29,17 @@ class NewsViewModel @Inject constructor(
     private val _newsUiState: MutableStateFlow<NewsUiState> = MutableStateFlow(NewsUiState(isLoading = true))
     val newsUiState = _newsUiState.asStateFlow()
 
+    init {
+        getFreshNews(NewsCategory.WHATEVER)
+    }
+
     fun getFreshNews(newsCategory: NewsCategory) {
-        _newsUiState.update { it.copy(newsCategory = newsCategory) }
+        _newsUiState.update {
+            it.copy(
+                newsCategory = newsCategory,
+                isLoading = true
+            )
+        }
         if (newsCategory == NewsCategory.WHATEVER) {
             newsRepository.getWhateverNews().updateNewsUiState()
         } else {

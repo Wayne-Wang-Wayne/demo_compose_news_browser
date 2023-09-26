@@ -1,18 +1,11 @@
 package com.example.mvvmcomposenewsbrowser.ui.util
 
-import android.content.Context
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavBackStackEntry
-import com.example.mvvmcomposenewsbrowser.R
-import com.example.mvvmcomposenewsbrowser.ui.MyNavigationActions
-import com.example.mvvmcomposenewsbrowser.ui.NewsNav
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,48 +28,6 @@ fun MyTopAppBar(
         },
         modifier = modifier
     )
-}
-
-
-fun NavBackStackEntry?.getTitle(context: Context): String = when (this?.destination?.route) {
-    NewsNav.NEWS_LIST_SCREEN_ROUTE -> context.getString(R.string.news_title)
-    NewsNav.NEWS_DETAIL_SCREEN_ROUTE -> context.getString(R.string.news_detail_title)
-    else -> ""
-}
-
-enum class TopAppBarType {
-    Drawer, Back
-}
-
-fun NavBackStackEntry?.getTopAppBarType(): TopAppBarType = when (this?.destination?.route) {
-    NewsNav.NEWS_LIST_SCREEN_ROUTE -> TopAppBarType.Drawer
-    NewsNav.NEWS_DETAIL_SCREEN_ROUTE -> TopAppBarType.Back
-    else -> TopAppBarType.Drawer
-}
-
-fun TopAppBarType.getOnClick(
-    navAction : MyNavigationActions,
-    drawerState: DrawerState,
-    coroutineScope: CoroutineScope
-): () -> Unit = when(this) {
-    TopAppBarType.Drawer -> {
-        {
-            if (drawerState.isOpen) {
-                coroutineScope.launch {
-                    drawerState.close()
-                }
-            } else {
-                coroutineScope.launch {
-                    drawerState.open()
-                }
-            }
-        }
-    }
-    TopAppBarType.Back -> {
-        {
-            navAction.popBack()
-        }
-    }
 }
 
 @Composable

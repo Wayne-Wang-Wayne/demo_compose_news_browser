@@ -45,10 +45,6 @@ fun NewsListScreen(
 ) {
     val newsUiState by viewModel.newsUiState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(viewModel) {
-        viewModel.getFreshNews(NewsCategory.WHATEVER)
-    }
-
     val vMIsLoading by derivedStateOf {
         newsUiState.isLoading
     }
