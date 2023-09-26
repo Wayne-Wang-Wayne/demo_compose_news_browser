@@ -9,6 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.*
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -90,11 +91,18 @@ fun NavGraphBuilder.newsGraph(
                 navController.getBackStackEntry(NewsNav.NEWS_LIST_SCREEN_ROUTE)
             }
             val newsViewModel = hiltViewModel<NewsViewModel>(backStackEntry)
+            val newsUiState by newsViewModel.newsUiState.collectAsStateWithLifecycle()
             NewsDetailScreen(
                 onTopLeftIconPress = {
                     navAction.popBack()
                 },
-                viewModel = newsViewModel
+                url = newsUiState.targetNews?.url,
+                isLiked = newsUiState.targetNews?.isLiked ?: false,
+                onToggleLike = {
+                    newsUiState.targetNews?.let { targetNews ->
+                        newsViewModel.toggleLike(targetNews)
+                    }
+                }
             )
         }
     }

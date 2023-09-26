@@ -30,15 +30,11 @@ import com.example.mvvmcomposenewsbrowser.ui.util.WebViewWithLoading
 @Composable
 fun NewsDetailScreen(
     onTopLeftIconPress: () -> Unit,
-    viewModel: NewsViewModel = hiltViewModel(),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    url: String?,
+    isLiked: Boolean,
+    onToggleLike: () -> Unit
 ) {
-
-    val newsUiState by viewModel.newsUiState.collectAsStateWithLifecycle()
-
-    val targetNews = newsUiState.targetNews
-
-    val isLiked = targetNews?.isLiked ?: false
 
     Scaffold(
         topBar = {
@@ -52,19 +48,15 @@ fun NewsDetailScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = {
-                    targetNews?.let {
-                        viewModel.toggleLike(it)
-                    }
-                },
+                onClick = onToggleLike,
             ) {
                 val scale by animateFloatAsState(
                     if (isLiked) 1.2f else 1f,
                     animationSpec = spring(
                         stiffness = Spring.StiffnessMedium
-                    )
+                    ), label = ""
                 )
-                val color by animateColorAsState(if (isLiked) Color.Red else Color.Gray)
+                val color by animateColorAsState(if (isLiked) Color.Red else Color.Gray, label = "")
 
                 Icon(
                     imageVector = Icons.Default.Favorite,
@@ -77,11 +69,11 @@ fun NewsDetailScreen(
             }
         }
     ) {
-        if (targetNews == null) {
+        if (url == null) {
             ErrorRetryLayout(onRetryClick = { })
         } else {
             WebViewWithLoading(
-                url = targetNews.url,
+                url = url,
                 modifier = modifier.padding(it)
             )
         }
