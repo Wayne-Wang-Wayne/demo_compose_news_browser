@@ -86,7 +86,7 @@ fun NavGraphBuilder.newsGraph(
             }
         }
         composable(NewsNav.NEWS_DETAIL_SCREEN_ROUTE){
-            val backStackEntry = remember {
+            val backStackEntry = remember(it) {
                 navController.getBackStackEntry(NewsNav.NEWS_LIST_SCREEN_ROUTE)
             }
             val newsViewModel = hiltViewModel<NewsViewModel>(backStackEntry)

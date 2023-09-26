@@ -45,20 +45,30 @@ fun NewsListScreen(
 ) {
     val newsUiState by viewModel.newsUiState.collectAsStateWithLifecycle()
 
-    val vMIsLoading by derivedStateOf {
-        newsUiState.isLoading
+    val vMIsLoading by remember(newsUiState) {
+        derivedStateOf {
+            newsUiState.isLoading
+        }
     }
-    val vMIsError by derivedStateOf {
-        newsUiState.isError
+    val vMIsError by remember(newsUiState) {
+        derivedStateOf {
+            newsUiState.isError
+        }
     }
-    val vMNewsList by derivedStateOf {
-        newsUiState.newsList
+    val vMNewsList by remember(newsUiState) {
+        derivedStateOf {
+            newsUiState.newsList
+        }
     }
-    val vMErrorMsg by derivedStateOf {
-        newsUiState.errorMsg
+    val vMErrorMsg by remember(newsUiState) {
+        derivedStateOf {
+            newsUiState.errorMsg
+        }
     }
-    val vMNewsCategory by derivedStateOf {
-        newsUiState.newsCategory
+    val vMNewsCategory by remember(newsUiState) {
+        derivedStateOf {
+            newsUiState.newsCategory
+        }
     }
 
     Scaffold(
