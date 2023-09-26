@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Demo Compose News Browser</string>
     // 標題
-    <string name="news_title">新聞列表</string>
+    <string name="news_list_title">新聞列表</string>
     <string name="news_detail_title">新聞內容</string>
 
 
@@ -11,5 +11,5 @@
     <string name="error_no_news">哇，目前沒有對應的新聞資料</string>
     <string name="error_check_internet">哇，資料載入失敗，請重新確認網路狀況。</string>
     <string name="reload">重新載入</string>
-    <string name="news_detail">新聞內容</string>
+    <string name="liked_news_title">收藏新聞</string>
 </resources>

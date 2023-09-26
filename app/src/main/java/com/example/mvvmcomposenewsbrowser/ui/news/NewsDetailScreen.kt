@@ -39,7 +39,7 @@ fun NewsDetailScreen(
     Scaffold(
         topBar = {
             MyTopAppBar(
-                title = stringResource(R.string.news_detail),
+                title = stringResource(R.string.news_detail_title),
                 onIconPress = onTopLeftIconPress,
                 icon = {
                     BackIcon()

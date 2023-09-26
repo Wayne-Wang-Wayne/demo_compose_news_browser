@@ -75,7 +75,7 @@ fun NewsListScreen(
         modifier = modifier,
         topBar = {
             MyTopAppBar(
-                title = stringResource(id = R.string.news_title),
+                title = stringResource(id = R.string.news_list_title),
                 onIconPress = onTopLeftIconPress,
                 icon = {
                     DrawerIcon()
