@@ -64,7 +64,7 @@ class DefaultNewsRepository @Inject constructor(
                 val parsedArticle = articles.map { article ->
                     async {
                         val linkBasicInfo = urlBasicInfoService.getLinkBasicInfo(article.url)
-                        val url = linkBasicInfo.redirectUrl?.encodeUrl() ?: article.url.encodeUrl()
+                        val url = linkBasicInfo.redirectUrl ?: article.url
                         ParsedArticle(
                             author = article.author,
                             title = article.title,
@@ -78,24 +78,6 @@ class DefaultNewsRepository @Inject constructor(
                 ParsedNewsListData(parsedArticle.awaitAll(), Status.Success)
             }
         }
-    }.catch {
-        emit(ParsedNewsListData(null, Status.ERROR(it.message ?: "")))
-    }.flowOn(dispatcher)
-
-    private fun Flow<List<LocalLikedArticle>>.localToParsedNews() = map { article ->
-        ParsedNewsListData(
-            listOf(
-                ParsedArticle(
-                    author = article.first().author,
-                    title = article.first().title,
-                    url = article.first().url,
-                    publishedAt = article.first().publishedAt,
-                    imgUrl = article.first().imgUrl,
-                    isLiked = likedArticleDao.isLiked(article.first().url)
-                )
-            ),
-            Status.Success
-        )
     }.catch {
         emit(ParsedNewsListData(null, Status.ERROR(it.message ?: "")))
     }.flowOn(dispatcher)

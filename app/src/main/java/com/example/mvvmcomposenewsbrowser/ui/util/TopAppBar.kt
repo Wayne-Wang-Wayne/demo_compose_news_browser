@@ -9,8 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavBackStackEntry
 import com.example.mvvmcomposenewsbrowser.R
-import com.example.mvvmcomposenewsbrowser.ui.MyDestinations
 import com.example.mvvmcomposenewsbrowser.ui.MyNavigationActions
+import com.example.mvvmcomposenewsbrowser.ui.NewsNav
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -39,8 +39,8 @@ fun MyTopAppBar(
 
 
 fun NavBackStackEntry?.getTitle(context: Context): String = when (this?.destination?.route) {
-    MyDestinations.NEWS_ROUTE -> context.getString(R.string.news_title)
-    MyDestinations.NEWS_DETAIL_ROUTE -> context.getString(R.string.news_detail_title)
+    NewsNav.NEWS_LIST_SCREEN_ROUTE -> context.getString(R.string.news_title)
+    NewsNav.NEWS_DETAIL_SCREEN_ROUTE -> context.getString(R.string.news_detail_title)
     else -> ""
 }
 
@@ -49,8 +49,8 @@ enum class TopAppBarType {
 }
 
 fun NavBackStackEntry?.getTopAppBarType(): TopAppBarType = when (this?.destination?.route) {
-    MyDestinations.NEWS_ROUTE -> TopAppBarType.Drawer
-    MyDestinations.NEWS_DETAIL_ROUTE -> TopAppBarType.Back
+    NewsNav.NEWS_LIST_SCREEN_ROUTE -> TopAppBarType.Drawer
+    NewsNav.NEWS_DETAIL_SCREEN_ROUTE -> TopAppBarType.Back
     else -> TopAppBarType.Drawer
 }
 

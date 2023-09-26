@@ -1,4 +1,4 @@
-package com.example.mvvmcomposenewsbrowser.ui.newsdetail
+package com.example.mvvmcomposenewsbrowser.ui.news
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
@@ -21,18 +21,24 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.mvvmcomposenewsbrowser.R
+import com.example.mvvmcomposenewsbrowser.ui.news.NewsViewModel
 import com.example.mvvmcomposenewsbrowser.ui.util.BackIcon
+import com.example.mvvmcomposenewsbrowser.ui.util.ErrorRetryLayout
 import com.example.mvvmcomposenewsbrowser.ui.util.MyTopAppBar
 import com.example.mvvmcomposenewsbrowser.ui.util.WebViewWithLoading
 
 @Composable
 fun NewsDetailScreen(
-    newsLink: String,
     onTopLeftIconPress: () -> Unit,
-    viewModel: NewsDetailViewModel = hiltViewModel(),
+    viewModel: NewsViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
 ) {
-    val newsDetailUiState by viewModel.newsDetailUiState.collectAsStateWithLifecycle()
+
+    val newsUiState by viewModel.newsUiState.collectAsStateWithLifecycle()
+
+    val targetNews = newsUiState.targetNews
+
+    val isLiked = targetNews?.isLiked ?: false
 
     Scaffold(
         topBar = {
@@ -46,15 +52,19 @@ fun NewsDetailScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = {  },
+                onClick = {
+                    targetNews?.let {
+                        viewModel.toggleLike(it)
+                    }
+                },
             ) {
                 val scale by animateFloatAsState(
-                    if (true) 1.2f else 1f,
+                    if (isLiked) 1.2f else 1f,
                     animationSpec = spring(
                         stiffness = Spring.StiffnessMedium
                     )
                 )
-                val color by animateColorAsState(if (true) Color.Red else Color.Gray)
+                val color by animateColorAsState(if (isLiked) Color.Red else Color.Gray)
 
                 Icon(
                     imageVector = Icons.Default.Favorite,
@@ -67,9 +77,13 @@ fun NewsDetailScreen(
             }
         }
     ) {
-        WebViewWithLoading(
-            url = newsLink,
-            modifier = modifier.padding(it)
-        )
+        if (targetNews == null) {
+            ErrorRetryLayout(onRetryClick = { })
+        } else {
+            WebViewWithLoading(
+                url = targetNews.url,
+                modifier = modifier.padding(it)
+            )
+        }
     }
 }

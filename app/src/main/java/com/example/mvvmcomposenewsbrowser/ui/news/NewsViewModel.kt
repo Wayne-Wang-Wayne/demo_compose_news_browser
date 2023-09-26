@@ -18,13 +18,13 @@ data class NewsUiState(
     val isLoading: Boolean = false,
     val isError: Boolean = false,
     val errorMsg: String = "",
-    val newsList: List<ParsedArticle> = listOf()
+    val newsList: List<ParsedArticle> = listOf(),
+    val targetNews: ParsedArticle? = null
 )
 
 @HiltViewModel
 class NewsViewModel @Inject constructor(
-    private val newsRepository: NewsRepository,
-    savedStateHandle: SavedStateHandle
+    private val newsRepository: NewsRepository
 ) : ViewModel() {
 
     private val _newsUiState: MutableStateFlow<NewsUiState> = MutableStateFlow(NewsUiState(isLoading = true))
@@ -52,12 +52,27 @@ class NewsViewModel @Inject constructor(
                 }
                 val updatedNewsList = newsUiState.newsList.toMutableList()
                 updatedNewsList[targetIndex] = currentArticle.copy(isLiked = !isLiked)
-                newsUiState.copy(
-                    newsList = updatedNewsList
-                )
+                if (currentArticle == newsUiState.targetNews) {
+                    // 連target都要更新
+                    val target = newsUiState.targetNews
+                    newsUiState.copy(
+                        newsList = updatedNewsList,
+                        targetNews = target.copy(isLiked = !target.isLiked)
+                    )
+                } else {
+                    newsUiState.copy(
+                        newsList = updatedNewsList,
+                    )
+                }
             } else {
                 newsUiState
             }
+        }
+    }
+
+    fun updateTargetNews(parsedArticle: ParsedArticle) {
+        _newsUiState.update {
+            it.copy(targetNews = parsedArticle)
         }
     }
 

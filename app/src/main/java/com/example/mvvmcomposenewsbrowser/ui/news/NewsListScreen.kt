@@ -37,7 +37,7 @@ import com.example.mvvmcomposenewsbrowser.ui.util.*
 private const val NEWS_SCREEN_TAG = "NEWS_SCREEN_TAG"
 
 @Composable
-fun NewsScreen(
+fun NewsListScreen(
     onTopLeftIconPress: () -> Unit,
     onNewsSelect: (ParsedArticle) -> Unit,
     modifier: Modifier = Modifier,
@@ -197,7 +197,8 @@ fun NewsListCard(
     modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier.height(120.dp)
+        modifier = modifier
+            .height(120.dp)
             .clickable {
                 onNewsSelect()
             },
@@ -321,7 +322,7 @@ fun PickItem(
 @Composable
 fun NewsScreenPreview() {
     MVVMComposeNewsBrowserTheme {
-        NewsScreen(
+        NewsListScreen(
             onTopLeftIconPress = {},
             onNewsSelect = {}
         )
