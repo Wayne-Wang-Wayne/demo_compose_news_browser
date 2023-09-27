@@ -15,9 +15,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.mvvmcomposenewsbrowser.ui.news.NewsListScreen
-import com.example.mvvmcomposenewsbrowser.ui.news.NewsViewModel
-import com.example.mvvmcomposenewsbrowser.ui.news.NewsDetailScreen
+import com.example.mvvmcomposenewsbrowser.ui.news.*
 import com.example.mvvmcomposenewsbrowser.ui.util.AppDrawer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -66,11 +64,17 @@ fun NavGraphBuilder.newsGraph(
     coroutineScope: CoroutineScope
 ) {
     navigation(startDestination = NewsNav.NEWS_LIST_SCREEN_ROUTE, route = NewsNav.NEWS_ROUTE) {
-        composable(NewsNav.NEWS_LIST_SCREEN_ROUTE){
+        composable(NewsNav.NEWS_LIST_SCREEN_ROUTE) {
             val newsViewModel = hiltViewModel<NewsViewModel>()
             AppDrawer(
                 drawerState = drawerState,
-                currentRoute = currentRoute
+                currentRoute = currentRoute,
+                onDrawerChoose = { route ->
+                    navAction.popAllAndNavigateTo(route)
+                    coroutineScope.launch {
+                        drawerState.close()
+                    }
+                }
             ) {
                 NewsListScreen(
                     onTopLeftIconPress = {
@@ -86,7 +90,7 @@ fun NavGraphBuilder.newsGraph(
                 )
             }
         }
-        composable(NewsNav.NEWS_DETAIL_SCREEN_ROUTE){
+        composable(NewsNav.NEWS_DETAIL_SCREEN_ROUTE) {
             val backStackEntry = remember(it) {
                 navController.getBackStackEntry(NewsNav.NEWS_LIST_SCREEN_ROUTE)
             }
@@ -104,6 +108,31 @@ fun NavGraphBuilder.newsGraph(
                     }
                 }
             )
+        }
+
+        composable(NewsNav.LIKED_NEWS_LIST_SCREEN_ROUTE) {
+            val newsViewModel = hiltViewModel<LikedNewsViewModel>()
+            AppDrawer(
+                drawerState = drawerState,
+                currentRoute = currentRoute,
+                onDrawerChoose = { route ->
+                    navAction.popAllAndNavigateTo(route)
+                    coroutineScope.launch {
+                        drawerState.close()
+                    }
+                }
+            ) {
+                LikedNewsListScreen(
+                    onTopLeftIconPress = {
+                        coroutineScope.launch {
+                            drawerState.open()
+                        }
+                    },
+                    onNewsSelect = { },
+                    onDislikeNews = {  },
+                    viewModel = newsViewModel
+                )
+            }
         }
     }
 }

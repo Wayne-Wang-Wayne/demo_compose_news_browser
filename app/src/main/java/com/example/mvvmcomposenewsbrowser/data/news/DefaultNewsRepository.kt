@@ -1,7 +1,7 @@
 package com.example.mvvmcomposenewsbrowser.data.news
 
-import com.example.mvvmcomposenewsbrowser.data.news.datasources.local.LikedArticleDao
-import com.example.mvvmcomposenewsbrowser.data.news.datasources.local.LocalLikedArticle
+import com.example.mvvmcomposenewsbrowser.data.news.datasources.local.LikedNewsDao
+import com.example.mvvmcomposenewsbrowser.data.news.datasources.local.LocalLikedNews
 import com.example.mvvmcomposenewsbrowser.data.news.datasources.remote.NewsApiData
 import com.example.mvvmcomposenewsbrowser.data.news.datasources.remote.NewsApiService
 import com.example.mvvmcomposenewsbrowser.data.news.datasources.remote.UrlBasicInfoService
@@ -19,7 +19,7 @@ import javax.inject.Inject
 
 class DefaultNewsRepository @Inject constructor(
     private val newsApiService: NewsApiService,
-    private val likedArticleDao: LikedArticleDao,
+    private val likedNewsDao: LikedNewsDao,
     private val urlBasicInfoService: UrlBasicInfoService,
     @DefaultDispatcher private val dispatcher: CoroutineDispatcher,
     @ApplicationScope private val scope: CoroutineScope,
@@ -31,29 +31,44 @@ class DefaultNewsRepository @Inject constructor(
     override fun getSpecificNews(category: String): Flow<ParsedNewsListData> =
         newsApiService.getSpecificNews(category = category).apiToParsedNews()
 
-    override suspend fun likeArticle(parsedArticle: ParsedArticle) = withContext(dispatcher) {
-        likedArticleDao.insert(
-            LocalLikedArticle(
-                author = parsedArticle.author,
-                title = parsedArticle.title,
-                url = parsedArticle.url,
-                publishedAt = parsedArticle.publishedAt,
-                imgUrl = parsedArticle.imgUrl
+    override suspend fun likeNews(parsedNews: ParsedNews) = withContext(dispatcher) {
+        likedNewsDao.insert(
+            LocalLikedNews(
+                author = parsedNews.author,
+                title = parsedNews.title,
+                url = parsedNews.url,
+                publishedAt = parsedNews.publishedAt,
+                imgUrl = parsedNews.imgUrl
             )
         )
     }
 
-    override suspend fun dislikeArticle(parsedArticle: ParsedArticle) = withContext(dispatcher) {
-        likedArticleDao.delete(
-            LocalLikedArticle(
-                author = parsedArticle.author,
-                title = parsedArticle.title,
-                url = parsedArticle.url,
-                publishedAt = parsedArticle.publishedAt,
-                imgUrl = parsedArticle.imgUrl
+    override suspend fun dislikeNews(parsedNews: ParsedNews) = withContext(dispatcher) {
+        likedNewsDao.delete(
+            LocalLikedNews(
+                author = parsedNews.author,
+                title = parsedNews.title,
+                url = parsedNews.url,
+                publishedAt = parsedNews.publishedAt,
+                imgUrl = parsedNews.imgUrl
             )
         )
     }
+
+    override fun getAllLikedNews(): Flow<List<ParsedNews>> = likedNewsDao.getLikedNews().map { localLikedNewsList ->
+        localLikedNewsList.map { localLikedNews ->
+            ParsedNews(
+                author = localLikedNews.author,
+                title = localLikedNews.title,
+                url = localLikedNews.url,
+                publishedAt = localLikedNews.publishedAt,
+                imgUrl = localLikedNews.imgUrl,
+                isLiked = true
+            )
+        }
+    }.catch {
+        listOf<ParsedNews>()
+    }.flowOn(dispatcher)
 
     private fun Flow<Response<NewsApiData>>.apiToParsedNews() = map { response ->
         val articles = response.body()?.articles
@@ -61,21 +76,21 @@ class DefaultNewsRepository @Inject constructor(
             ParsedNewsListData(null, Status.ERROR(response.message()))
         } else {
             coroutineScope {
-                val parsedArticle = articles.map { article ->
+                val parsedNews = articles.map { article ->
                     async {
                         val linkBasicInfo = urlBasicInfoService.getLinkBasicInfo(article.url)
                         val url = linkBasicInfo.redirectUrl ?: article.url
-                        ParsedArticle(
+                        ParsedNews(
                             author = article.author,
                             title = article.title,
                             url = url,
                             publishedAt = article.publishedAt,
                             imgUrl = linkBasicInfo.image ?: "",
-                            isLiked = likedArticleDao.isLiked(url)
+                            isLiked = likedNewsDao.isLiked(url)
                         )
                     }
                 }
-                ParsedNewsListData(parsedArticle.awaitAll(), Status.Success)
+                ParsedNewsListData(parsedNews.awaitAll(), Status.Success)
             }
         }
     }.catch {

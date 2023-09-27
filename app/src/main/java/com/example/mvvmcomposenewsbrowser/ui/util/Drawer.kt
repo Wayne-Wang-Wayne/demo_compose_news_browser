@@ -13,21 +13,28 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.dp
 import com.example.mvvmcomposenewsbrowser.R
 import androidx.compose.material.DrawerState
+import com.example.mvvmcomposenewsbrowser.ui.NewsNav
 
 
 @Composable
 fun AppDrawer(
     drawerState: DrawerState,
     currentRoute: String,
+    onDrawerChoose: (String) -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
     ModalDrawer(
         drawerState = drawerState,
         drawerContent = {
-            DrawerContent(
-                currentRoute = currentRoute
-            )
+            Surface(
+                color = MaterialTheme.colorScheme.background
+            ) {
+                DrawerContent(
+                    currentRoute = currentRoute,
+                    onDrawerChoose = onDrawerChoose
+                )
+            }
         }
     ) {
         content()
@@ -37,13 +44,17 @@ fun AppDrawer(
 @Composable
 fun DrawerContent(
     currentRoute: String,
+    onDrawerChoose: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier.fillMaxSize()
     ) {
         DrawerHeader()
-        DrawerBody()
+        DrawerBody(
+            currentRoute = currentRoute,
+            onDrawerChoose = onDrawerChoose
+        )
     }
 }
 
@@ -61,19 +72,30 @@ fun DrawerHeader(
 
 @Composable
 fun DrawerBody(
+    currentRoute: String,
+    onDrawerChoose: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
     ) {
-        DrawerButton(isSelected = true)
-        DrawerButton(isSelected = false)
+        for (category in DrawerCategory.values()) {
+            DrawerButton(
+                isSelected = category.route == currentRoute,
+                onDrawerChoose = {
+                    onDrawerChoose(category.route)
+                },
+                name = category.titleName
+            )
+        }
     }
 }
 
 @Composable
 fun DrawerButton(
     isSelected: Boolean,
+    onDrawerChoose: () -> Unit,
+    name: String,
     modifier: Modifier = Modifier
 ) {
     val tintColor = if (isSelected) {
@@ -82,7 +104,7 @@ fun DrawerButton(
         MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
     }
     TextButton(
-        onClick = { /*TODO*/ },
+        onClick = onDrawerChoose,
         modifier = modifier
     ) {
         Row(
@@ -99,7 +121,7 @@ fun DrawerButton(
                 modifier = Modifier.width(16.dp)
             )
             Text(
-                text = "我是按鈕",
+                text = name,
                 style = MaterialTheme.typography.titleLarge.copy(color = tintColor)
             )
         }
@@ -116,4 +138,16 @@ fun DrawerButton(
 //    }
 //}
 
-enum class Drawer
+enum class DrawerCategory(
+    val route: String,
+    val titleName: String
+    ) {
+    NEWS(
+        NewsNav.NEWS_LIST_SCREEN_ROUTE,
+        "新聞列表"
+    ),
+    LIKED_NEWS(
+        NewsNav.LIKED_NEWS_LIST_SCREEN_ROUTE,
+        "收藏新聞"
+    )
+}

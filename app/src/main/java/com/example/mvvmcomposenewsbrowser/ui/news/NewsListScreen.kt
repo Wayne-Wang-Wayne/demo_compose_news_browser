@@ -28,7 +28,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import com.example.mvvmcomposenewsbrowser.R
-import com.example.mvvmcomposenewsbrowser.data.news.ParsedArticle
+import com.example.mvvmcomposenewsbrowser.data.news.ParsedNews
 import com.example.mvvmcomposenewsbrowser.data.news.datasources.remote.NewsCategory
 import com.example.mvvmcomposenewsbrowser.data.news.datasources.remote.toChinese
 import com.example.mvvmcomposenewsbrowser.ui.theme.MVVMComposeNewsBrowserTheme
@@ -39,7 +39,7 @@ private const val NEWS_SCREEN_TAG = "NEWS_SCREEN_TAG"
 @Composable
 fun NewsListScreen(
     onTopLeftIconPress: () -> Unit,
-    onNewsSelect: (ParsedArticle) -> Unit,
+    onNewsSelect: (ParsedNews) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: NewsViewModel = hiltViewModel()
 ) {
@@ -103,13 +103,13 @@ fun NewsListScreen(
 fun NewsScreenBody(
     isLoading: Boolean,
     isError: Boolean,
-    newsList: List<ParsedArticle>,
+    newsList: List<ParsedNews>,
     errMsg: String,
     selectedCategory: NewsCategory,
     onCategorySelect: (NewsCategory) -> Unit,
-    onLikeClick: (ParsedArticle) -> Unit,
+    onLikeClick: (ParsedNews) -> Unit,
     onRetry: (NewsCategory) -> Unit,
-    onNewsSelect: (ParsedArticle) -> Unit,
+    onNewsSelect: (ParsedNews) -> Unit,
     modifier: Modifier = Modifier,
     contentsListState: LazyListState = rememberLazyListState(),
     pickerListState: LazyListState = rememberLazyListState()
@@ -150,10 +150,10 @@ fun NewsScreenBody(
 @Composable
 fun NewsSuccessBody(
     isLoading: Boolean,
-    newsList: List<ParsedArticle>,
+    newsList: List<ParsedNews>,
     contentsListState: LazyListState,
-    onNewsSelect: (ParsedArticle) -> Unit,
-    onLikeClick: (ParsedArticle) -> Unit,
+    onNewsSelect: (ParsedNews) -> Unit,
+    onLikeClick: (ParsedNews) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(

@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.mvvmcomposenewsbrowser.data.news.DefaultNewsRepository
 import com.example.mvvmcomposenewsbrowser.data.news.NewsRepository
-import com.example.mvvmcomposenewsbrowser.data.news.datasources.local.LikedArticleDao
+import com.example.mvvmcomposenewsbrowser.data.news.datasources.local.LikedNewsDao
 import com.example.mvvmcomposenewsbrowser.data.news.datasources.local.NewsDatabase
 import com.example.mvvmcomposenewsbrowser.data.news.datasources.remote.DefaultUrlBasicInfoService
 import com.example.mvvmcomposenewsbrowser.data.news.datasources.remote.NewsApiService
@@ -70,5 +70,5 @@ object DatabaseModule {
     }
 
     @Provides
-    fun provideLikedArticleDao(database: NewsDatabase): LikedArticleDao = database.likedArticleDao()
+    fun provideLikedArticleDao(database: NewsDatabase): LikedNewsDao = database.likedArticleDao()
 }

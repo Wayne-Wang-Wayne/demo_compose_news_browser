@@ -21,6 +21,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.mvvmcomposenewsbrowser.R
@@ -155,4 +156,51 @@ fun WebViewWithLoading(
             client = webClient
         )
     }
+}
+
+@Composable
+fun BasicAlertDialog(
+    onDismissRequest: () -> Unit,
+    onConfirmation: () -> Unit,
+    dialogTitle: String,
+    dialogText: String,
+    icon: ImageVector
+) {
+    AlertDialog(
+        icon = {
+            Icon(icon, contentDescription = null)
+        },
+        title = {
+            Text(text = dialogTitle)
+        },
+        text = {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = dialogText)
+            }
+        },
+        onDismissRequest = {
+            onDismissRequest()
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onConfirmation()
+                }
+            ) {
+                Text(stringResource(R.string.dialog_confirm))
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    onDismissRequest()
+                }
+            ) {
+                Text(stringResource(R.string.dialog_cancel))
+            }
+        }
+    )
 }

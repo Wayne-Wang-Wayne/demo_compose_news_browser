@@ -12,4 +12,9 @@
     <string name="error_check_internet">哇，資料載入失敗，請重新確認網路狀況。</string>
     <string name="reload">重新載入</string>
     <string name="liked_news_title">收藏新聞</string>
+    <string name="dialog_confirm">確定</string>
+    <string name="dialog_cancel">取消</string>
+    <string name="dialog_delete_title">刪除</string>
+    <string name="dialog_delete_body">確定要刪除此則新聞?</string>
+    <string name="empty_liked_news">目前沒有收藏的新聞唷!</string>
 </resources>

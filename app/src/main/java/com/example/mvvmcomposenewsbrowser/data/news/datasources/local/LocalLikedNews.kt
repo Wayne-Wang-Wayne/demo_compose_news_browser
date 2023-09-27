@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 @Entity(
     tableName = "liked_article"
 )
-data class LocalLikedArticle(
+data class LocalLikedNews(
     val author: String,
     val title: String,
     @PrimaryKey

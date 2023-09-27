@@ -3,7 +3,7 @@ package com.example.mvvmcomposenewsbrowser.ui.news
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mvvmcomposenewsbrowser.data.news.NewsRepository
-import com.example.mvvmcomposenewsbrowser.data.news.ParsedArticle
+import com.example.mvvmcomposenewsbrowser.data.news.ParsedNews
 import com.example.mvvmcomposenewsbrowser.data.news.ParsedNewsListData
 import com.example.mvvmcomposenewsbrowser.data.news.Status
 import com.example.mvvmcomposenewsbrowser.data.news.datasources.remote.NewsCategory
@@ -17,8 +17,8 @@ data class NewsUiState(
     val isLoading: Boolean = false,
     val isError: Boolean = false,
     val errorMsg: String = "",
-    val newsList: List<ParsedArticle> = listOf(),
-    val targetNews: ParsedArticle? = null
+    val newsList: List<ParsedNews> = listOf(),
+    val targetNews: ParsedNews? = null
 )
 
 @HiltViewModel
@@ -47,16 +47,16 @@ class NewsViewModel @Inject constructor(
         }
     }
 
-    fun toggleLike(parsedArticle: ParsedArticle) = viewModelScope.launch {
+    fun toggleLike(parsedNews: ParsedNews) = viewModelScope.launch {
         _newsUiState.update { newsUiState ->
-            val targetIndex = newsUiState.newsList.indexOf(parsedArticle)
+            val targetIndex = newsUiState.newsList.indexOf(parsedNews)
             if(targetIndex != -1) {
                 val currentArticle = newsUiState.newsList[targetIndex]
                 val isLiked = currentArticle.isLiked
                 if(isLiked) {
-                    newsRepository.dislikeArticle(parsedArticle)
+                    newsRepository.dislikeNews(parsedNews)
                 } else {
-                    newsRepository.likeArticle(parsedArticle)
+                    newsRepository.likeNews(parsedNews)
                 }
                 val updatedNewsList = newsUiState.newsList.toMutableList()
                 updatedNewsList[targetIndex] = currentArticle.copy(isLiked = !isLiked)
@@ -78,9 +78,9 @@ class NewsViewModel @Inject constructor(
         }
     }
 
-    fun updateTargetNews(parsedArticle: ParsedArticle) {
+    fun updateTargetNews(parsedNews: ParsedNews) {
         _newsUiState.update {
-            it.copy(targetNews = parsedArticle)
+            it.copy(targetNews = parsedNews)
         }
     }
 
@@ -88,7 +88,7 @@ class NewsViewModel @Inject constructor(
         this@updateNewsUiState.collect { parsedListData ->
             when (val currentStatus = parsedListData.status) {
                 is Status.Success -> {
-                    if (parsedListData.parsedArticle.isNullOrEmpty()) {
+                    if (parsedListData.parsedNews.isNullOrEmpty()) {
                         _newsUiState.update {
                             it.copy(
                                 isError = true,
@@ -101,7 +101,7 @@ class NewsViewModel @Inject constructor(
                             it.copy(
                                 isError = false,
                                 isLoading = false,
-                                newsList = parsedListData.parsedArticle
+                                newsList = parsedListData.parsedNews
                             )
                         }
                     }
