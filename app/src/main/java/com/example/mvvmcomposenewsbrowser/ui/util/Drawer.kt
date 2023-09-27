@@ -13,6 +13,11 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.dp
 import com.example.mvvmcomposenewsbrowser.R
 import androidx.compose.material.DrawerState
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import com.example.mvvmcomposenewsbrowser.ui.NewsNav
 
 
@@ -85,7 +90,25 @@ fun DrawerBody(
                 onDrawerChoose = {
                     onDrawerChoose(category.route)
                 },
-                name = category.titleName
+                name = category.titleName,
+                icon = { tint ->
+                    when(category) {
+                        DrawerCategory.NEWS -> {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_news),
+                                contentDescription = stringResource(id = R.string.news_list_title),
+                                tint = tint
+                            )
+                        }
+                        DrawerCategory.LIKED_NEWS -> {
+                            Icon(
+                                Icons.Default.Favorite,
+                                contentDescription = stringResource(id = R.string.liked_news_title),
+                                tint = tint
+                            )
+                        }
+                    }
+                }
             )
         }
     }
@@ -96,6 +119,7 @@ fun DrawerButton(
     isSelected: Boolean,
     onDrawerChoose: () -> Unit,
     name: String,
+    icon: @Composable (Color) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val tintColor = if (isSelected) {
@@ -112,11 +136,7 @@ fun DrawerButton(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Icon(
-                Icons.Rounded.ShoppingCart,
-                contentDescription = null,
-                tint = tintColor
-            )
+            icon(tintColor)
             Spacer(
                 modifier = Modifier.width(16.dp)
             )
@@ -127,17 +147,6 @@ fun DrawerButton(
         }
     }
 }
-
-//@Preview("Drawer contents", showBackground = true)
-//@Composable
-//fun DrawerContentPreview() {
-//    MVVMComposeNewsBrowserTheme {
-//        Surface {
-//            DrawerContent()
-//        }
-//    }
-//}
-
 enum class DrawerCategory(
     val route: String,
     val titleName: String

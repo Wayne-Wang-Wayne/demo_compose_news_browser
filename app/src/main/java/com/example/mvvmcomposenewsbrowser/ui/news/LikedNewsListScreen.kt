@@ -212,7 +212,7 @@ fun LikedNewsListCard(
             Divider(
                 color = MaterialTheme.colorScheme.outline,
                 modifier = Modifier.fillMaxHeight()
-                    .padding(start = 10.dp, end = 5.dp)
+                    .padding(start = 10.dp, end = 8.dp)
                     .width(2.dp)
             )
             Box(
@@ -227,7 +227,7 @@ fun LikedNewsListCard(
                     imageVector = Icons.Outlined.Delete,
                     contentDescription = null,
                     modifier = Modifier
-                        .size(24.dp),
+                        .size(30.dp),
                     tint = Color.Red
                 )
             }
