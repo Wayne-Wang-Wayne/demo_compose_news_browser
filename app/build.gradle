@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.mvvmcomposenewsbrowser'
+    namespace 'com.example.democomposenewsbrowser'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.example.mvvmcomposenewsbrowser"
+        applicationId "com.example.democomposenewsbrowser"
         minSdk 24
         targetSdk 33
         versionCode 1
