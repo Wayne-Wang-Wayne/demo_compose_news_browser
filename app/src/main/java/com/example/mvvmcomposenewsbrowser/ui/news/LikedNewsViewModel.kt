@@ -26,7 +26,7 @@ class LikedNewsViewModel @Inject constructor(
 
     val likedUiState = combine(_allLikedNews, _targetNews) { allLikedNews, targetNews ->
         LikedNewsUiState(
-            likedNewsList = allLikedNews,
+            likedNewsList = allLikedNews.reversed(),
             targetNews = targetNews
         )
     }.stateIn(
@@ -37,6 +37,24 @@ class LikedNewsViewModel @Inject constructor(
 
     fun dislikeNews(parsedNews: ParsedNews) = viewModelScope.launch {
         newsRepository.dislikeNews(parsedNews)
+    }
+
+    fun toggleDetailLike(parsedNews: ParsedNews) {
+        val isLiked = _targetNews.value.isLiked
+        if(isLiked) {
+            dislikeNews(parsedNews)
+        } else {
+            viewModelScope.launch {
+                newsRepository.likeNews(parsedNews)
+            }
+        }
+        _targetNews.update {
+            it.copy(isLiked = !isLiked)
+        }
+    }
+
+    fun targetNews(parsedNews: ParsedNews) {
+        _targetNews.value = parsedNews
     }
 
 }

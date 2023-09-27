@@ -7,7 +7,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
@@ -39,7 +38,6 @@ import com.example.mvvmcomposenewsbrowser.ui.util.MyTopAppBar
 fun LikedNewsListScreen(
     onTopLeftIconPress: () -> Unit,
     onNewsSelect: (ParsedNews) -> Unit,
-    onDislikeNews: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: LikedNewsViewModel = hiltViewModel()
 ) {
@@ -76,8 +74,10 @@ fun LikedNewsListScreen(
             LikedNewsBody(
                 likedNewsList = likedNewsList,
                 contentsListState = rememberLazyListState(),
-                onNewsSelect = {},
-                onDeleteClick = {},
+                onNewsSelect = onNewsSelect,
+                onDeleteConfirm = { dislikedNews ->
+                    viewModel.dislikeNews(dislikedNews)
+                },
                 modifier = Modifier.padding(it)
             )
         }
@@ -89,7 +89,7 @@ fun LikedNewsBody(
     likedNewsList: List<ParsedNews>,
     contentsListState: LazyListState = rememberLazyListState(),
     onNewsSelect: (ParsedNews) -> Unit,
-    onDeleteClick: (ParsedNews) -> Unit,
+    onDeleteConfirm: (ParsedNews) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var openAlertDialog by remember { mutableStateOf(false) }
@@ -126,7 +126,7 @@ fun LikedNewsBody(
                 openAlertDialog = false
             },
             onConfirmClick = {
-                onDeleteClick(deleteNews)
+                onDeleteConfirm(deleteNews)
                 openAlertDialog = false
             }
         )

@@ -96,12 +96,22 @@ fun NavGraphBuilder.newsGraph(
             }
             val newsViewModel = hiltViewModel<NewsViewModel>(backStackEntry)
             val newsUiState by newsViewModel.newsUiState.collectAsStateWithLifecycle()
+            val url by remember(newsUiState.targetNews) {
+                derivedStateOf {
+                    newsUiState.targetNews?.url
+                }
+            }
+            val isLiked by remember(newsUiState.targetNews) {
+                derivedStateOf {
+                    newsUiState.targetNews?.isLiked ?: false
+                }
+            }
             NewsDetailScreen(
                 onTopLeftIconPress = {
                     navAction.popBack()
                 },
-                url = newsUiState.targetNews?.url,
-                isLiked = newsUiState.targetNews?.isLiked ?: false,
+                url = url,
+                isLiked = isLiked,
                 onToggleLike = {
                     newsUiState.targetNews?.let { targetNews ->
                         newsViewModel.toggleLike(targetNews)
@@ -111,7 +121,7 @@ fun NavGraphBuilder.newsGraph(
         }
 
         composable(NewsNav.LIKED_NEWS_LIST_SCREEN_ROUTE) {
-            val newsViewModel = hiltViewModel<LikedNewsViewModel>()
+            val likedNewsViewModel = hiltViewModel<LikedNewsViewModel>()
             AppDrawer(
                 drawerState = drawerState,
                 currentRoute = currentRoute,
@@ -128,11 +138,43 @@ fun NavGraphBuilder.newsGraph(
                             drawerState.open()
                         }
                     },
-                    onNewsSelect = { },
-                    onDislikeNews = {  },
-                    viewModel = newsViewModel
+                    onNewsSelect = {
+                        likedNewsViewModel.targetNews(it)
+                        navAction.navigateToLikedNewsDetail()
+                    },
+                    viewModel = likedNewsViewModel
                 )
             }
+        }
+
+        composable(NewsNav.LIKED_NEWS_DETAIL_SCREEN_ROUTE) {
+            val backStackEntry = remember(it) {
+                navController.getBackStackEntry(NewsNav.LIKED_NEWS_LIST_SCREEN_ROUTE)
+            }
+            val likedNewsViewModel = hiltViewModel<LikedNewsViewModel>(backStackEntry)
+            val likedUiState by likedNewsViewModel.likedUiState.collectAsStateWithLifecycle()
+            val url by remember(likedUiState.targetNews) {
+                derivedStateOf {
+                    likedUiState.targetNews?.url
+                }
+            }
+            val isLiked by remember(likedUiState.targetNews) {
+                derivedStateOf {
+                    likedUiState.targetNews?.isLiked ?: false
+                }
+            }
+            NewsDetailScreen(
+                onTopLeftIconPress = {
+                    navAction.popBack()
+                },
+                url = url,
+                isLiked = isLiked,
+                onToggleLike = {
+                    likedUiState.targetNews?.let { targetNews ->
+                        likedNewsViewModel.toggleDetailLike(targetNews)
+                    }
+                }
+            )
         }
     }
 }
