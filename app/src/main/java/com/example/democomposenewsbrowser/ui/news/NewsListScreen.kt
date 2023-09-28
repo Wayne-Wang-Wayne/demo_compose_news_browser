@@ -31,7 +31,7 @@ import com.example.democomposenewsbrowser.R
 import com.example.democomposenewsbrowser.data.news.ParsedNews
 import com.example.democomposenewsbrowser.data.news.datasources.remote.NewsCategory
 import com.example.democomposenewsbrowser.data.news.datasources.remote.toChinese
-import com.example.democomposenewsbrowser.ui.theme.MVVMComposeNewsBrowserTheme
+import com.example.democomposenewsbrowser.ui.theme.DemoComposeNewsBrowserTheme
 import com.example.democomposenewsbrowser.ui.util.*
 
 private const val NEWS_SCREEN_TAG = "NEWS_SCREEN_TAG"
@@ -327,7 +327,7 @@ fun PickItem(
 @Preview(showBackground = true)
 @Composable
 fun NewsScreenPreview() {
-    MVVMComposeNewsBrowserTheme {
+    DemoComposeNewsBrowserTheme {
         NewsListScreen(
             onTopLeftIconPress = {},
             onNewsSelect = {}

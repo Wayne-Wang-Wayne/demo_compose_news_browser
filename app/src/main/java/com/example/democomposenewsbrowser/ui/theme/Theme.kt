@@ -77,7 +77,7 @@ private val DarkColors = darkColorScheme(
 )
 
 @Composable
-fun MVVMComposeNewsBrowserTheme(
+fun DemoComposeNewsBrowserTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,

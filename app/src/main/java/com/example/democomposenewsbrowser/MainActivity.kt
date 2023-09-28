@@ -7,7 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.democomposenewsbrowser.ui.MyNavGraph
-import com.example.democomposenewsbrowser.ui.theme.MVVMComposeNewsBrowserTheme
+import com.example.democomposenewsbrowser.ui.theme.DemoComposeNewsBrowserTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -15,7 +15,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MVVMComposeNewsBrowserTheme {
+            DemoComposeNewsBrowserTheme {
                 MyNavGraph()
             }
         }
@@ -30,7 +30,7 @@ fun Greeting(name: String) {
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    MVVMComposeNewsBrowserTheme {
+    DemoComposeNewsBrowserTheme {
         Greeting("Android")
     }
 }
