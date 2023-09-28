@@ -1,7 +1,10 @@
 package com.example.democomposenewsbrowser.data.news.datasources.remote
 
 import com.example.democomposenewsbrowser.di.IoDispatcher
+import com.example.democomposenewsbrowser.util.DefaultJsoupWrapper
+import com.example.democomposenewsbrowser.util.JsoupWrapper
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -14,21 +17,24 @@ interface UrlBasicInfoService {
 
 class DefaultUrlBasicInfoService @Inject constructor(
     @IoDispatcher private val dispatcher: CoroutineDispatcher,
+    private val jsoupWrapper: JsoupWrapper
 ) : UrlBasicInfoService {
 
     companion object {
-        private const val AGENT = "Mozilla"
-        private const val REFERRER = "http://www.google.com"
-        private const val TIMEOUT = 10000
-        private const val DOC_SELECT_QUERY = "meta[property^=og:]"
-        private const val OPEN_GRAPH_KEY = "content"
-        private const val PROPERTY = "property"
-        private const val OG_IMAGE = "og:image"
-        private const val OG_DESCRIPTION = "og:description"
-        private const val OG_URL = "og:url"
-        private const val OG_TITLE = "og:title"
-        private const val OG_SITE_NAME = "og:site_name"
-        private const val OG_TYPE = "og:type"
+        const val AGENT = "Mozilla"
+        const val CSS_QUERY = "a"
+        const val REDIRECT_URL_KEY = "href"
+        const val REFERRER = "http://www.google.com"
+        const val TIMEOUT = 10000
+        const val DOC_SELECT_QUERY = "meta[property^=og:]"
+        const val OPEN_GRAPH_KEY = "content"
+        const val PROPERTY = "property"
+        const val OG_IMAGE = "og:image"
+        const val OG_DESCRIPTION = "og:description"
+        const val OG_URL = "og:url"
+        const val OG_TITLE = "og:title"
+        const val OG_SITE_NAME = "og:site_name"
+        const val OG_TYPE = "og:type"
     }
 
 
@@ -42,12 +48,12 @@ class DefaultUrlBasicInfoService @Inject constructor(
 
         try {
             val document: Document =
-                Jsoup.connect(mUrl).get()
+                jsoupWrapper.getConnection(mUrl).get()
 
-            val linkElement: Element = document.select("a").first()!!
-            val redirectUrl: String = linkElement.attr("href")
+            val linkElement: Element = document.select(CSS_QUERY).first()!!
+            val redirectUrl: String = linkElement.attr(REDIRECT_URL_KEY)
             openGraphResult.redirectUrl = redirectUrl
-            val response = Jsoup.connect(redirectUrl)
+            val response = jsoupWrapper.getConnection(redirectUrl)
                 .ignoreContentType(true)
                 .userAgent(AGENT)
                 .referrer(REFERRER)

@@ -9,6 +9,8 @@ import com.example.democomposenewsbrowser.data.news.datasources.local.NewsDataba
 import com.example.democomposenewsbrowser.data.news.datasources.remote.DefaultUrlBasicInfoService
 import com.example.democomposenewsbrowser.data.news.datasources.remote.NewsApiService
 import com.example.democomposenewsbrowser.data.news.datasources.remote.UrlBasicInfoService
+import com.example.democomposenewsbrowser.util.DefaultJsoupWrapper
+import com.example.democomposenewsbrowser.util.JsoupWrapper
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -46,6 +48,9 @@ object NewsRemoteDataModule {
         .addConverterFactory(gsonConverterFactory)
         .addCallAdapterFactory(FlowCallAdapterFactory.create())
         .build()
+
+    @Provides
+    fun bindJsoupWrapper(defaultJsoupWrapper: DefaultJsoupWrapper): JsoupWrapper = defaultJsoupWrapper
 
     @Singleton
     @Provides

@@ -109,4 +109,10 @@ dependencies {
 
     // Compose WebView
     implementation "com.google.accompanist:accompanist-webview:0.32.0"
+
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1"
+    // Mockito framework
+    testImplementation "org.mockito:mockito-core:5.5.0"
+    // Mockito-kotlin
+    testImplementation "org.mockito.kotlin:mockito-kotlin:5.1.0"
 }
