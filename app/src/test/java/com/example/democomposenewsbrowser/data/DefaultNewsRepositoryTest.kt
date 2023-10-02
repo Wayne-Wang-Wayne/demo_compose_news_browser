@@ -2,11 +2,14 @@ package com.example.democomposenewsbrowser.data
 
 import com.example.democomposenewsbrowser.data.news.DefaultNewsRepository
 import com.example.democomposenewsbrowser.data.news.ParsedNews
+import com.example.democomposenewsbrowser.data.news.ParsedNewsListData
 import com.example.democomposenewsbrowser.data.news.Status
 import com.example.shared_test.newsbrowser.local.FakeLikedNewsDao
 import com.example.shared_test.newsbrowser.network.FakeNewsApiService
 import com.example.shared_test.newsbrowser.network.FakeUrlBasicInfoService
 import junit.framework.Assert.assertEquals
+import junit.framework.Assert.assertNull
+import junit.framework.Assert.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
@@ -43,13 +46,24 @@ class DefaultNewsRepositoryTest {
     }
 
     @Test
-    fun defaultNewsRepository_getDefaultNewsSuccessWithBasicInfo_shouldReturnSuccessResultWithBasicInfoUpdated() = testScope.runTest {
-        newsApiService.forceFail = false
+    fun defaultNewsRepository_getDefaultNewsSuccess_shouldReturnSuccessResultWithBasicInfoUpdatedIfHas() = testScope.runTest {
         val result = defaultNewsRepository.getWhateverNews().first()
         val parsedNewsList = result.parsedNews
         assertEquals(result.status, Status.Success)
         assertEquals(
-            parsedNewsList!![1], ParsedNews(
+            parsedNewsList!![0],
+            ParsedNews(
+                author = "author1",
+                title = "title1",
+                url = "url1",
+                publishedAt = "publishedAt1",
+                imgUrl = "",
+                isLiked = false
+            )
+        )
+        assertEquals(
+            parsedNewsList[1],
+            ParsedNews(
                 author = "author2",
                 title = "title2",
                 url = "redirectUrl2",
@@ -61,27 +75,19 @@ class DefaultNewsRepositoryTest {
     }
 
     @Test
-    fun defaultNewsRepository_getDefaultNewsSuccessWithNoBasicInfo_shouldReturnSuccessResultWithNoBasicInfoUpdated() = testScope.runTest {
-        newsApiService.forceFail = false
+    fun defaultNewsRepository_getDefaultNewsError_shouldReturnErrorResult() = testScope.runTest {
+        newsApiService.forceError = true
         val result = defaultNewsRepository.getWhateverNews().first()
-        val parsedNewsList = result.parsedNews
-        assertEquals(result.status, Status.Success)
-        assertEquals(
-            parsedNewsList!![0], ParsedNews(
-                author = "author1",
-                title = "title1",
-                url = "url1",
-                publishedAt = "publishedAt1",
-                imgUrl = "",
-                isLiked = false
-            )
-        )
+        assertNull(result.parsedNews)
+        assertTrue(result.status is Status.ERROR)
     }
 
     @Test
-    fun defaultNewsRepository_getDefaultNewsSuccess_shouldReturnSuccessResult() = testScope.runTest {
-        newsApiService.forceFail = false
-
+    fun defaultNewsRepository_getDefaultNewsException_shouldReturnErrorResult() = testScope.runTest {
+        newsApiService.forceException = true
+        val result = defaultNewsRepository.getWhateverNews().first()
+        assertNull(result.parsedNews)
+        assertTrue(result.status is Status.ERROR)
     }
 
 }
