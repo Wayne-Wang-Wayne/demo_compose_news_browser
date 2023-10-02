@@ -9,11 +9,15 @@ import okhttp3.ResponseBody.Companion.toResponseBody
 import retrofit2.Response
 
 class FakeNewsApiService : NewsApiService {
+
+    var forceFail = false
+
     override fun getWhateverNews(
         country: String,
         apiKey: String
     ): Flow<Response<NewsApiData>> = flow {
-        emit(fakeNewsApiService[country] ?: throw java.lang.Exception("Get news from api error!"))
+        if (forceFail) throw java.lang.Exception("Get news from api error!")
+        emit(fakeNewsApiService[FAKE_NEWS_API_SUCCESS_KEY] ?: throw java.lang.Exception("Get news from api error!"))
     }
 
     override fun getSpecificNews(
@@ -21,7 +25,8 @@ class FakeNewsApiService : NewsApiService {
         category: String,
         apiKey: String
     ): Flow<Response<NewsApiData>> = flow {
-        emit(fakeNewsApiService[country] ?: throw java.lang.Exception("Get news from api error!"))
+        if (forceFail) throw java.lang.Exception("Get news from api error!")
+        emit(fakeNewsApiService[category] ?: throw java.lang.Exception("Get news from api error!"))
     }
 }
 
