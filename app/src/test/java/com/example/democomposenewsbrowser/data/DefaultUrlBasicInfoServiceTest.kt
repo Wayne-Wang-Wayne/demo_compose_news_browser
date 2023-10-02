@@ -1,4 +1,4 @@
-package com.example.democomposenewsbrowser
+package com.example.democomposenewsbrowser.data
 
 
 import com.example.democomposenewsbrowser.data.news.datasources.remote.DefaultUrlBasicInfoService
