@@ -67,7 +67,7 @@ class DefaultNewsRepository @Inject constructor(
             )
         }
     }.catch {
-        listOf<ParsedNews>()
+        emit(listOf())
     }.flowOn(dispatcher)
 
     private fun Flow<Response<NewsApiData>>.apiToParsedNews() = map { response ->

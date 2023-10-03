@@ -90,4 +90,49 @@ class DefaultNewsRepositoryTest {
         assertTrue(result.status is Status.ERROR)
     }
 
+    @Test
+    fun defaultNewsRepository_getSpecificNewsSuccess_shouldReturnSuccessResultWithBasicInfoUpdatedIfHas() = testScope.runTest {
+        val result = defaultNewsRepository.getSpecificNews("specific").first()
+        val parsedNewsList = result.parsedNews
+        assertEquals(result.status, Status.Success)
+        assertEquals(
+            parsedNewsList!![0],
+            ParsedNews(
+                author = "author1",
+                title = "title1",
+                url = "url1",
+                publishedAt = "publishedAt1",
+                imgUrl = "",
+                isLiked = false
+            )
+        )
+        assertEquals(
+            parsedNewsList[1],
+            ParsedNews(
+                author = "author2",
+                title = "title2",
+                url = "redirectUrl2",
+                publishedAt = "publishedAt2",
+                imgUrl = "image2",
+                isLiked = false
+            )
+        )
+    }
+
+    @Test
+    fun defaultNewsRepository_getSpecificNewsError_shouldReturnErrorResult() = testScope.runTest {
+        newsApiService.forceError = true
+        val result = defaultNewsRepository.getSpecificNews("specific").first()
+        assertNull(result.parsedNews)
+        assertTrue(result.status is Status.ERROR)
+    }
+
+    @Test
+    fun defaultNewsRepository_getSpecificNewsException_shouldReturnErrorResult() = testScope.runTest {
+        newsApiService.forceException = true
+        val result = defaultNewsRepository.getSpecificNews("specific").first()
+        assertNull(result.parsedNews)
+        assertTrue(result.status is Status.ERROR)
+    }
+
 }
