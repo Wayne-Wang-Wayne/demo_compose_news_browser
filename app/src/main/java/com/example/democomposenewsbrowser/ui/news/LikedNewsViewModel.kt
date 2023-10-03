@@ -1,5 +1,8 @@
 package com.example.democomposenewsbrowser.ui.news
 
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.democomposenewsbrowser.data.news.NewsRepository
@@ -10,7 +13,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class LikedNewsUiState(
-    val likedNewsList: List<ParsedNews>,
+    val likedNewsList: SnapshotStateList<ParsedNews>,
     val targetNews: ParsedNews? = null
 )
 
@@ -26,13 +29,13 @@ class LikedNewsViewModel @Inject constructor(
 
     val likedUiState = combine(_allLikedNews, _targetNews) { allLikedNews, targetNews ->
         LikedNewsUiState(
-            likedNewsList = allLikedNews.reversed(),
+            likedNewsList = allLikedNews.reversed().toMutableStateList(),
             targetNews = targetNews
         )
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
-        initialValue = LikedNewsUiState(listOf())
+        initialValue = LikedNewsUiState(mutableStateListOf())
     )
 
     fun dislikeNews(parsedNews: ParsedNews) = viewModelScope.launch {

@@ -1,5 +1,8 @@
 package com.example.democomposenewsbrowser.ui.news
 
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.democomposenewsbrowser.data.news.NewsRepository
@@ -17,7 +20,7 @@ data class NewsUiState(
     val isLoading: Boolean = false,
     val isError: Boolean = false,
     val errorMsg: String = "",
-    val newsList: List<ParsedNews> = listOf(),
+    val newsList: SnapshotStateList<ParsedNews> = mutableStateListOf(),
     val targetNews: ParsedNews? = null
 )
 
@@ -48,32 +51,25 @@ class NewsViewModel @Inject constructor(
     }
 
     fun toggleLike(parsedNews: ParsedNews) = viewModelScope.launch {
-        _newsUiState.update { newsUiState ->
-            val targetIndex = newsUiState.newsList.indexOf(parsedNews)
-            if(targetIndex != -1) {
-                val currentArticle = newsUiState.newsList[targetIndex]
-                val isLiked = currentArticle.isLiked
-                if(isLiked) {
-                    newsRepository.dislikeNews(parsedNews)
-                } else {
-                    newsRepository.likeNews(parsedNews)
-                }
-                val updatedNewsList = newsUiState.newsList.toMutableList()
-                updatedNewsList[targetIndex] = currentArticle.copy(isLiked = !isLiked)
-                if (currentArticle == newsUiState.targetNews) {
-                    // 連target都要更新
-                    val target = newsUiState.targetNews
-                    newsUiState.copy(
-                        newsList = updatedNewsList,
-                        targetNews = target.copy(isLiked = !target.isLiked)
-                    )
-                } else {
-                    newsUiState.copy(
-                        newsList = updatedNewsList,
-                    )
-                }
+        val newsList = _newsUiState.value.newsList
+        val targetIndex = newsList.indexOf(parsedNews)
+        if(targetIndex != -1) {
+            val currentArticle = newsList[targetIndex]
+            val isLiked = currentArticle.isLiked
+            if(isLiked) {
+                newsRepository.dislikeNews(parsedNews)
             } else {
-                newsUiState
+                newsRepository.likeNews(parsedNews)
+            }
+            newsList[targetIndex] = newsList[targetIndex].copy(isLiked = !isLiked)
+            val targetNews = _newsUiState.value.targetNews
+            if (currentArticle == targetNews) {
+                // 連target都要更新
+                _newsUiState.update {
+                    it.copy(
+                        targetNews = targetNews.copy(isLiked = !targetNews.isLiked)
+                    )
+                }
             }
         }
     }
@@ -101,7 +97,7 @@ class NewsViewModel @Inject constructor(
                             it.copy(
                                 isError = false,
                                 isLoading = false,
-                                newsList = parsedListData.parsedNews
+                                newsList = parsedListData.parsedNews.toMutableStateList()
                             )
                         }
                     }
