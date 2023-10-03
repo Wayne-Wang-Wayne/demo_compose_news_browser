@@ -1,9 +1,6 @@
 package com.example.democomposenewsbrowser.data
 
-import com.example.democomposenewsbrowser.data.news.DefaultNewsRepository
-import com.example.democomposenewsbrowser.data.news.ParsedNews
-import com.example.democomposenewsbrowser.data.news.ParsedNewsListData
-import com.example.democomposenewsbrowser.data.news.Status
+import com.example.democomposenewsbrowser.data.news.*
 import com.example.shared_test.newsbrowser.local.FakeLikedNewsDao
 import com.example.shared_test.newsbrowser.network.FakeNewsApiService
 import com.example.shared_test.newsbrowser.network.FakeUrlBasicInfoService
@@ -15,6 +12,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
@@ -133,6 +131,41 @@ class DefaultNewsRepositoryTest {
         val result = defaultNewsRepository.getSpecificNews("specific").first()
         assertNull(result.parsedNews)
         assertTrue(result.status is Status.ERROR)
+    }
+
+    @Test
+    fun defaultNewsRepository_likeNews_shouldStoreLiked() = testScope.runTest {
+        val insertNews = ParsedNews(
+            author = "author",
+            title = "title",
+            url = "url",
+            publishedAt = "publishedAt",
+            imgUrl = "imgUrl",
+            isLiked = true
+        )
+        defaultNewsRepository.likeNews(insertNews)
+        val likedNews = likedNewsDao.getLikedNews().first()[0]
+        assertEquals(likedNews.author, insertNews.author)
+        assertEquals(likedNews.title, insertNews.title)
+        assertEquals(likedNews.url, insertNews.url)
+        assertEquals(likedNews.publishedAt, insertNews.publishedAt)
+        assertEquals(likedNews.imgUrl, insertNews.imgUrl)
+    }
+
+    @Test
+    fun defaultNewsRepository_dislikeNewsSuccess_shouldRemoveLike() = testScope.runTest {
+        val deleteNews = ParsedNews(
+            author = "author",
+            title = "title",
+            url = "url",
+            publishedAt = "publishedAt",
+            imgUrl = "imgUrl",
+            isLiked = true
+        )
+        likedNewsDao.insert(deleteNews.toLocalLikedNews())
+        defaultNewsRepository.dislikeNews(deleteNews)
+        val likedNewsList = likedNewsDao.getLikedNews().first()
+        assertTrue(likedNewsList.isEmpty())
     }
 
 }
