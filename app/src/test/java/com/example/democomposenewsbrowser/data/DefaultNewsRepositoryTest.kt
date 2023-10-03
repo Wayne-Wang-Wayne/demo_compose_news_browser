@@ -8,7 +8,10 @@ import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertNull
 import junit.framework.Assert.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -22,6 +25,25 @@ class DefaultNewsRepositoryTest {
     private lateinit var newsApiService: FakeNewsApiService
     private lateinit var likedNewsDao: FakeLikedNewsDao
     private lateinit var urlBasicInfoService: FakeUrlBasicInfoService
+
+    private val likedNewsList = listOf(
+        ParsedNews(
+            author = "author1",
+            title = "title1",
+            url = "url1",
+            publishedAt = "publishedAt1",
+            imgUrl = "imgUrl1",
+            isLiked = true
+        ),
+        ParsedNews(
+            author = "author2",
+            title = "title2",
+            url = "url2",
+            publishedAt = "publishedAt2",
+            imgUrl = "imgUrl2",
+            isLiked = true
+        )
+    )
 
 
     private var testDispatcher = UnconfinedTestDispatcher()
@@ -166,6 +188,16 @@ class DefaultNewsRepositoryTest {
         defaultNewsRepository.dislikeNews(deleteNews)
         val likedNewsList = likedNewsDao.getLikedNews().first()
         assertTrue(likedNewsList.isEmpty())
+    }
+
+    @Test
+    fun defaultNewsRepository_getAllLikedNews_shouldGetAllLikedNewsFlow() = testScope.runTest {
+        val likedNews1 = likedNewsList[0]
+        val likedNews2 = likedNewsList[1]
+        defaultNewsRepository.likeNews(likedNews1)
+        assertEquals(listOf(likedNews1), defaultNewsRepository.getAllLikedNews().first())
+        defaultNewsRepository.likeNews(likedNews2)
+        assertEquals(listOf(likedNews1, likedNews2), defaultNewsRepository.getAllLikedNews().first())
     }
 
 }
