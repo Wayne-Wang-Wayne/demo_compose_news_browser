@@ -65,4 +65,37 @@ class NewsViewModelTest {
         assertNull(successUiState.targetNews)
     }
 
+    @Test
+    fun newsViewModel_getSpecificFreshNewsSuccess_shouldUpdateUIState() = runTest {
+        val newsUiStateFlow = newsViewModel.newsUiState
+        newsViewModel.getFreshNews(NewsCategory.ENTERTAINMENT)
+        assertTrue(newsUiStateFlow.value.isLoading)
+        // 直接跑完所有pending的 coroutines actions
+        advanceUntilIdle()
+        val successUiState = newsUiStateFlow.first()
+        assertEquals(successUiState.newsCategory, NewsCategory.ENTERTAINMENT)
+        assertFalse(successUiState.isLoading)
+        assertFalse(successUiState.isError)
+        assertEquals(successUiState.errorMsg, "")
+        assertEquals(successUiState.newsList.toList(), fakeRemoteNewsData)
+        assertNull(successUiState.targetNews)
+    }
+
+    @Test
+    fun newsViewModel_getSpecificFreshNewsFail_shouldUpdateUIState() = runTest {
+        newsRepository.setForceError(true)
+        val newsUiStateFlow = newsViewModel.newsUiState
+        newsViewModel.getFreshNews(NewsCategory.ENTERTAINMENT)
+        assertTrue(newsUiStateFlow.value.isLoading)
+        // 直接跑完所有pending的 coroutines actions
+        advanceUntilIdle()
+        val successUiState = newsUiStateFlow.first()
+        assertEquals(successUiState.newsCategory, NewsCategory.ENTERTAINMENT)
+        assertFalse(successUiState.isLoading)
+        assertTrue(successUiState.isError)
+        assertTrue(successUiState.errorMsg.isNotEmpty())
+        assertTrue(successUiState.newsList.isEmpty())
+        assertNull(successUiState.targetNews)
+    }
+
 }
