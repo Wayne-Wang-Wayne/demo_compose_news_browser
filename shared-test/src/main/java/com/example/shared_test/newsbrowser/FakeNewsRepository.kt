@@ -38,8 +38,8 @@ class FakeNewsRepository : NewsRepository {
     private val _savedNewsList = _savedNews.map { it.values.toList() }
 
     override fun getWhateverNews(): Flow<ParsedNewsListData> = flow {
-        // TODO 要想辦法消除delay的等待
-        delay(1000)
+        // emulate delay
+        delay(3000)
         if (forceError) {
             emit(
                 ParsedNewsListData(
@@ -58,8 +58,8 @@ class FakeNewsRepository : NewsRepository {
     }
 
     override fun getSpecificNews(category: String): Flow<ParsedNewsListData> = flow {
-        // TODO 要想辦法消除delay的等待
-        delay(1000)
+        // emulate delay
+        delay(3000)
         if (forceError) {
             emit(
                 ParsedNewsListData(
