@@ -14,7 +14,7 @@ val fakeRemoteNewsData = listOf(
         url = "url1",
         publishedAt = "publishedAt1",
         imgUrl = "imgUrl1",
-        isLiked = true
+        isLiked = false
     ),
     ParsedNews(
         author = "author2",
@@ -35,7 +35,11 @@ class FakeNewsRepository : NewsRepository {
     private var forceError = false
 
     private val _savedNews = MutableStateFlow(LinkedHashMap<String, ParsedNews>())
-    private val _savedNewsList = _savedNews.map { it.values.toList() }
+    private val _savedNewsList = _savedNews.map {
+        it.values.toList().map { parsedNews ->
+            parsedNews.copy(isLiked = true)
+        }
+    }
 
     override fun getWhateverNews(): Flow<ParsedNewsListData> = flow {
         // emulate delay
@@ -43,14 +47,16 @@ class FakeNewsRepository : NewsRepository {
         if (forceError) {
             emit(
                 ParsedNewsListData(
-                    parsedNews = fakeRemoteNewsData,
+                    parsedNews = listOf(),
                     status = Status.ERROR(FAKE_ERROR_MESSAGE)
                 )
             )
         } else {
             emit(
                 ParsedNewsListData(
-                    parsedNews = fakeRemoteNewsData,
+                    parsedNews = fakeRemoteNewsData.map { parsedNews ->
+                        parsedNews.setCorrectParsedNews()
+                    },
                     status = Status.Success
                 )
             )
@@ -63,14 +69,16 @@ class FakeNewsRepository : NewsRepository {
         if (forceError) {
             emit(
                 ParsedNewsListData(
-                    parsedNews = fakeRemoteNewsData,
+                    parsedNews = listOf(),
                     status = Status.ERROR(FAKE_ERROR_MESSAGE)
                 )
             )
         } else {
             emit(
                 ParsedNewsListData(
-                    parsedNews = fakeRemoteNewsData,
+                    parsedNews = fakeRemoteNewsData.map { parsedNews ->
+                        parsedNews.setCorrectParsedNews()
+                    },
                     status = Status.Success
                 )
             )
@@ -98,4 +106,8 @@ class FakeNewsRepository : NewsRepository {
     fun setForceError(forceError: Boolean) {
         this.forceError = forceError
     }
+
+    private fun ParsedNews.setCorrectParsedNews() =
+        copy(isLiked = _savedNews.value.values.toList().map { it.url }.contains(this.url))
+
 }
