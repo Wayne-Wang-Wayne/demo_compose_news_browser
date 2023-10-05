@@ -6,6 +6,8 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.example.democomposenewsbrowser.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,7 +37,7 @@ fun DrawerIcon(
     modifier: Modifier = Modifier
 ) {
     Icon(
-        Icons.Default.Menu, contentDescription = "drawer",
+        Icons.Default.Menu, contentDescription = stringResource(R.string.open_drawer),
         modifier = modifier
     )
 }
