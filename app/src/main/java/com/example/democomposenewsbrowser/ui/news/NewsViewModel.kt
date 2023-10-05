@@ -52,7 +52,7 @@ class NewsViewModel @Inject constructor(
 
     fun toggleLike(parsedNews: ParsedNews) = viewModelScope.launch {
         val newsList = _newsUiState.value.newsList
-        val targetIndex = newsList.indexOf(parsedNews)
+        val targetIndex = newsList.map { it.url }.indexOf(parsedNews.url)
         if(targetIndex != -1) {
             val currentArticle = newsList[targetIndex]
             val isLiked = currentArticle.isLiked

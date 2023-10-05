@@ -100,25 +100,63 @@ class NewsViewModelTest {
     @Test
     fun newsViewModel_toggleUnlikedNews_uiStateShouldUpdateAndRepositoryShouldUpdate() = runTest {
         val newsUiStateFlow = newsViewModel.newsUiState
+        // 先抓新聞
         newsViewModel.getFreshNews(NewsCategory.WHATEVER)
         // 直接跑完所有pending的 coroutines actions
         advanceUntilIdle()
-        val originNewsList = newsUiStateFlow.first().newsList.toList()
+        val firstUINewsList = newsUiStateFlow.first().newsList.toList()
         // 先檢查uiState正確
-        assertFalse(originNewsList[0].isLiked)
-        assertFalse(originNewsList[1].isLiked)
+        assertFalse(firstUINewsList[0].isLiked)
+        assertFalse(firstUINewsList[1].isLiked)
         // 再檢查repository正確
-        val storeNews = newsRepository.getAllLikedNews().first()
-        assertTrue(storeNews.isEmpty())
+        val firstStoredNews = newsRepository.getAllLikedNews().first()
+        assertTrue(firstStoredNews.isEmpty())
         // 第0筆觸發收藏
-        newsViewModel.toggleLike(originNewsList[0])
-        val afterNewsList = newsUiStateFlow.first().newsList.toList()
-        // 先檢查state正確
-        assertTrue(afterNewsList[0].isLiked)
-        assertFalse(afterNewsList[1].isLiked)
+        newsViewModel.toggleLike(firstUINewsList[0])
+        val secondUINewsList = newsUiStateFlow.first().newsList.toList()
+        // 先檢查uiState正確
+        assertTrue(secondUINewsList[0].isLiked)
+        assertFalse(secondUINewsList[1].isLiked)
         // 再檢查repository正確更新
-        val secondTimeStoreNews = newsRepository.getAllLikedNews().first()
-        assertEquals(afterNewsList[0].url, secondTimeStoreNews[0].url)
+        val secondStoredNews = newsRepository.getAllLikedNews().first()
+        assertEquals(secondUINewsList[0].url, secondStoredNews[0].url)
+    }
+
+    @Test
+    fun newsViewModel_toggleLikedNews_uiStateShouldUpdateAndRepositoryShouldUpdate() = runTest {
+        val newsUiStateFlow = newsViewModel.newsUiState
+        // 先抓新聞
+        newsViewModel.getFreshNews(NewsCategory.WHATEVER)
+        // 直接跑完所有pending的 coroutines actions
+        advanceUntilIdle()
+        val firstUINewsList = newsUiStateFlow.first().newsList.toList()
+        // 先檢查uiState正確
+        assertFalse(firstUINewsList[0].isLiked)
+        assertFalse(firstUINewsList[1].isLiked)
+        // 再檢查repository正確
+        val firstStoredNews = newsRepository.getAllLikedNews().first()
+        assertTrue(firstStoredNews.isEmpty())
+        // 第0筆第1筆皆觸發收藏
+        newsViewModel.toggleLike(firstUINewsList[0])
+        newsViewModel.toggleLike(firstUINewsList[1])
+        val secondUINewsList = newsUiStateFlow.first().newsList.toList()
+        // 先檢查uiState正確
+        assertTrue(secondUINewsList[0].isLiked)
+        assertTrue(secondUINewsList[1].isLiked)
+        // 再檢查repository正確更新
+        val secondStoredNews = newsRepository.getAllLikedNews().first()
+        assertEquals(secondUINewsList[0].url, secondStoredNews[0].url)
+        assertEquals(secondUINewsList[1].url, secondStoredNews[1].url)
+        // 取消第一筆收藏
+        newsViewModel.toggleLike(firstUINewsList[1])
+        val thirdUINewsList = newsUiStateFlow.first().newsList.toList()
+        // 先檢查uiState正確
+        assertTrue(thirdUINewsList[0].isLiked)
+        assertFalse(thirdUINewsList[1].isLiked)
+        // 再檢查repository正確更新
+        val thirdStoredNews = newsRepository.getAllLikedNews().first()
+        assertTrue(thirdStoredNews.size == 1)
+        assertEquals(thirdUINewsList[0].url, thirdStoredNews[0].url)
     }
 
 }
