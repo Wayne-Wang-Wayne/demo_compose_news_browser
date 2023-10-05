@@ -159,4 +159,22 @@ class NewsViewModelTest {
         assertEquals(thirdUINewsList[0].url, thirdStoredNews[0].url)
     }
 
+    @Test
+    fun newsViewModel_updateTargetNews_shouldUpdateUiState() = runTest {
+        val newsUiStateFlow = newsViewModel.newsUiState
+        // 先抓新聞
+        newsViewModel.getFreshNews(NewsCategory.WHATEVER)
+        // 直接跑完所有pending的 coroutines actions
+        advanceUntilIdle()
+        val newsList = newsUiStateFlow.value.newsList
+        // 一開始會是null
+        assertNull(newsUiStateFlow.value.targetNews)
+        // target第0筆
+        newsViewModel.updateTargetNews(newsList[0])
+        assertEquals(newsUiStateFlow.value.targetNews, newsList[0])
+        // target第1筆
+        newsViewModel.updateTargetNews(newsList[1])
+        assertEquals(newsUiStateFlow.value.targetNews, newsList[1])
+    }
+
 }
