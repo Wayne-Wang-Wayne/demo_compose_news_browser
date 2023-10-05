@@ -21,7 +21,13 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
-        buildConfigField "String", "NEWS_API_KEY", "\"${NEWS_API_KEY}\""
+
+        // 處理自定義BuildConfig參數
+        Properties properties = new Properties()
+        if (project.rootProject.file('local.properties').canRead()) {
+            properties.load(project.rootProject.file("local.properties").newDataInputStream())
+        }
+        buildConfigField "String", 'NEWS_API_KEY', properties.getProperty('NEWS_API_KEY')
     }
 
     buildTypes {
