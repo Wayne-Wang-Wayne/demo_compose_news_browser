@@ -60,6 +60,14 @@ class AppNavigationTest {
         assertIsNewsListScreen()
     }
 
+    @Test
+    fun selectDrawerLikedNewsListScreen_shouldGoToLikedNewsListScreen() {
+        openDrawer()
+        composeTestRule.onNodeWithText(activity.getString(R.string.liked_news_title))
+            .performClick()
+        assertIsLikedNewsListScreen()
+    }
+
     private fun setContent() {
         composeTestRule.setContent {
             DemoComposeNewsBrowserTheme {
@@ -79,8 +87,19 @@ class AppNavigationTest {
     }
 
     private fun assertIsNewsListScreen() {
-        composeTestRule.onNode(hasAnySibling(hasContentDescription(activity.getString(R.string.open_drawer))))
-            .assertIsDisplayed()
+        composeTestRule.onNode(
+            hasText(activity.getString(R.string.news_list_title)).and(
+                hasAnySibling(hasContentDescription(activity.getString(R.string.open_drawer)))
+            )
+        ).assertIsDisplayed()
+    }
+
+    private fun assertIsLikedNewsListScreen() {
+        composeTestRule.onNode(
+            hasText(activity.getString(R.string.liked_news_title)).and(
+                hasAnySibling(hasContentDescription(activity.getString(R.string.open_drawer)))
+            )
+        ).assertIsDisplayed()
     }
 
 }
