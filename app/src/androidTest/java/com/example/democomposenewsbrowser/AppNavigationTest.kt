@@ -42,29 +42,87 @@ class AppNavigationTest {
     @Test
     fun firstOpenApp_shouldGoToNewsListScreen() {
         composeTestRule.printUnmergedTree(TAG)
+        // 確認一開始在NewsList頁
         assertIsNewsListScreen()
     }
 
     @Test
     fun clickNewsListItem_shouldGoToNewsDetail() {
-        goToNewsDetail()
+        // 點擊第一個item
+        composeTestRule.waitUntilAtLeastOneExists(hasText("title1"), 5000)
+        composeTestRule.onNodeWithText("title1").performClick()
+        // 確認在NewsDetail頁
         composeTestRule.onNodeWithText(activity.getString(R.string.news_detail_title))
             .assertIsDisplayed()
     }
 
     @Test
-    fun clickNewsDetailBack_shouldGoToNewsList() {
-        goToNewsDetail()
-        composeTestRule.onNodeWithText(activity.getString(R.string.news_detail_title))
-        composeTestRule.onNodeWithContentDescription(activity.getString(R.string.back_press)).performClick()
+    fun selectDrawerLikedNewsListScreen_shouldGoToLikedNewsListScreen() {
+        goToLikedNewsScreen()
+        // 確認在收藏新聞頁
+        assertIsLikedNewsListScreen()
+    }
+
+    @Test
+    fun selectDrawerNewsListScreen_shouldGoToNewsListScreen() {
+        goToLikedNewsScreen()
+        // 確認在收藏新聞頁
+        assertIsLikedNewsListScreen()
+        // 點擊drawer按鈕回到NewsList
+        openDrawer()
+        composeTestRule.onNodeWithText(activity.getString(R.string.news_list_title))
+            .performClick()
+        // 確認在NewsListScreen
         assertIsNewsListScreen()
     }
 
     @Test
-    fun selectDrawerLikedNewsListScreen_shouldGoToLikedNewsListScreen() {
-        openDrawer()
-        composeTestRule.onNodeWithText(activity.getString(R.string.liked_news_title))
-            .performClick()
+    fun clickLikedNewsListItem_shouldGoToNewsDetail() {
+        // 先按愛心讓收藏有item按
+        composeTestRule.waitUntilAtLeastOneExists(hasText("title1"), 5000)
+        // 按第一個愛心
+        composeTestRule.onNode(
+            hasParent(hasText("title1")).and(
+                hasContentDescription(activity.getString(R.string.like_button))
+            )
+        ).performClick()
+        // 去收藏新聞頁
+        goToLikedNewsScreen()
+        // 點收藏item
+        composeTestRule.onNodeWithText("title1").performClick()
+        // 確認在NewsDetail頁
+        composeTestRule.onNodeWithText(activity.getString(R.string.news_detail_title))
+            .assertIsDisplayed()
+    }
+
+    @Test
+    fun clickNewsDetailBack_shouldGoToPreviousScreen() {
+        // 先按愛心讓收藏有item按
+        composeTestRule.waitUntilAtLeastOneExists(hasText("title1"), 5000)
+        composeTestRule.onNode(
+            hasParent(hasText("title1")).and(
+                hasContentDescription(activity.getString(R.string.like_button))
+            )
+        ).performClick()
+        // 去第一個新聞
+        composeTestRule.onNodeWithText("title1").performClick()
+        // 確認在NewsDetail頁
+        composeTestRule.onNodeWithText(activity.getString(R.string.news_detail_title))
+            .assertIsDisplayed()
+        // 點擊返回
+        backPress()
+        // 確認回到NewsList頁
+        assertIsNewsListScreen()
+        // 去LikedNews頁
+        goToLikedNewsScreen()
+        // 點擊第一個收藏新聞
+        composeTestRule.onNodeWithText("title1").performClick()
+        // 確認在NewsDetail頁
+        composeTestRule.onNodeWithText(activity.getString(R.string.news_detail_title))
+            .assertIsDisplayed()
+        // 點擊返回
+        backPress()
+        // 確認在收藏新聞頁
         assertIsLikedNewsListScreen()
     }
 
@@ -81,11 +139,6 @@ class AppNavigationTest {
             .performClick()
     }
 
-    private fun goToNewsDetail() {
-        composeTestRule.waitUntilAtLeastOneExists(hasText("title1"), 5000)
-        composeTestRule.onNodeWithText("title1").performClick()
-    }
-
     private fun assertIsNewsListScreen() {
         composeTestRule.onNode(
             hasText(activity.getString(R.string.news_list_title)).and(
@@ -100,6 +153,16 @@ class AppNavigationTest {
                 hasAnySibling(hasContentDescription(activity.getString(R.string.open_drawer)))
             )
         ).assertIsDisplayed()
+    }
+
+    private fun backPress() {
+        composeTestRule.onNodeWithContentDescription(activity.getString(R.string.back_press)).performClick()
+    }
+
+    private fun goToLikedNewsScreen() {
+        openDrawer()
+        composeTestRule.onNodeWithText(activity.getString(R.string.liked_news_title))
+            .performClick()
     }
 
 }

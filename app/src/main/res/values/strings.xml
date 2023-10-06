@@ -19,4 +19,5 @@
     <string name="empty_liked_news">目前沒有收藏的新聞唷!</string>
     <string name="open_drawer">Open Drawer</string>
     <string name="back_press">Back Press</string>
+    <string name="like_button">Like Button</string>
 </resources>

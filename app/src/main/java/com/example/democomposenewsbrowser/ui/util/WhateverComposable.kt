@@ -48,7 +48,7 @@ fun HeartButton(
     ) {
         Icon(
             imageVector = Icons.Default.Favorite,
-            contentDescription = null,
+            contentDescription = stringResource(R.string.like_button),
             modifier = Modifier
                 .scale(scale)
                 .size(24.dp),
