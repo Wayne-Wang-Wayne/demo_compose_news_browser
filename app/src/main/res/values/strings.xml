@@ -18,4 +18,5 @@
     <string name="dialog_delete_body">確定要刪除此則新聞?</string>
     <string name="empty_liked_news">目前沒有收藏的新聞唷!</string>
     <string name="open_drawer">Open Drawer</string>
+    <string name="back_press">Back Press</string>
 </resources>

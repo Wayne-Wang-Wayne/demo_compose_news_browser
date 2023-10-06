@@ -47,7 +47,7 @@ fun BackIcon(
     modifier: Modifier = Modifier
 ) {
     Icon(
-        Icons.Default.ArrowBack, contentDescription = "back press",
+        Icons.Default.ArrowBack, contentDescription = stringResource(R.string.back_press),
         modifier = modifier
     )
 }

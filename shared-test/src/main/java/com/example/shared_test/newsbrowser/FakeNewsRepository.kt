@@ -43,7 +43,7 @@ class FakeNewsRepository : NewsRepository {
 
     override fun getWhateverNews(): Flow<ParsedNewsListData> = flow {
         // emulate delay
-        delay(3000)
+        delay(1200)
         if (forceError) {
             emit(
                 ParsedNewsListData(
@@ -65,7 +65,7 @@ class FakeNewsRepository : NewsRepository {
 
     override fun getSpecificNews(category: String): Flow<ParsedNewsListData> = flow {
         // emulate delay
-        delay(3000)
+        delay(1200)
         if (forceError) {
             emit(
                 ParsedNewsListData(
