@@ -57,7 +57,7 @@ class LikedNewsViewModel @Inject constructor(
     }
 
     fun targetNews(parsedNews: ParsedNews) {
-        _targetNews.value = parsedNews
+        _targetNews.value = parsedNews.copy(isLiked = true)
     }
 
 }
