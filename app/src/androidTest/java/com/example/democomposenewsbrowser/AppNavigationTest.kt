@@ -1,25 +1,20 @@
 package com.example.democomposenewsbrowser
 
+import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performClick
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.filters.LargeTest
 import com.example.democomposenewsbrowser.data.news.NewsRepository
 import com.example.democomposenewsbrowser.ui.MyNavGraph
 import com.example.democomposenewsbrowser.ui.theme.DemoComposeNewsBrowserTheme
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import junit.framework.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import javax.inject.Inject
 
-@RunWith(AndroidJUnit4::class)
-@LargeTest
 @HiltAndroidTest
 class AppNavigationTest {
 
@@ -45,7 +40,9 @@ class AppNavigationTest {
 
     @Test
     fun xxx() {
-        assertTrue(true)
+        newsRepository.getAllLikedNews()
+        newsRepository
+        Log.d("","")
     }
 
     private fun setContent() {
