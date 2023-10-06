@@ -95,9 +95,10 @@ class FakeNewsRepository : NewsRepository {
 
     override suspend fun dislikeNews(parsedNews: ParsedNews) {
         if (forceError) return
-        _savedNews.update {
-            it.remove(parsedNews.url)
-            it
+        _savedNews.update { news ->
+            val map = LinkedHashMap<String, ParsedNews>(news)
+            map.remove(parsedNews.url)
+            map
         }
     }
 
