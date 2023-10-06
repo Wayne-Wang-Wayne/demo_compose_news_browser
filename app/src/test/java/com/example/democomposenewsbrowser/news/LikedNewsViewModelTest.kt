@@ -96,8 +96,11 @@ class LikedNewsViewModelTest {
     }
 
     @Test
-    fun likedNewsViewModelTest_toggleDetailLikeOnUnLikedNews_shouldLikeNews() {
-
+    fun likedNewsViewModelTest_targetNews_shouldUpdateUiStateAndRepository() = runTest {
+        val uiStateFlow = likedNewsViewModel.likedUiState
+        likedNewsViewModel.targetNews(myNews)
+        val targetNews = uiStateFlow.first().targetNews
+        assertEquals(myNews.copy(isLiked = true), targetNews)
     }
 
     private suspend fun insertOneLikeNews() {
