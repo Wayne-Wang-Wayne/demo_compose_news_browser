@@ -148,7 +148,7 @@ fun WebViewWithLoading(
                 .weight(1f),
             navigator = navigator,
             onCreated = { webView ->
-                webView.settings.javaScriptEnabled = false
+                webView.settings.javaScriptEnabled = true
             },
             client = webClient
         )
